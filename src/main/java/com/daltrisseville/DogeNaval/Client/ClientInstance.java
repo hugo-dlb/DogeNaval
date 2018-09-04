@@ -1,4 +1,4 @@
-package Client;
+package com.daltrisseville.DogeNaval.Client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

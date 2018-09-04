@@ -1,4 +1,4 @@
-package Server;
+package com.daltrisseville.DogeNaval.Server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
