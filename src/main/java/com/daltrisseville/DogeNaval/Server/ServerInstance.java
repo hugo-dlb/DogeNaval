@@ -1,5 +1,7 @@
 package com.daltrisseville.DogeNaval.Server;
 
+import com.daltrisseville.DogeNaval.Server.Entities.GameEngine;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -11,17 +13,24 @@ import java.util.UUID;
 public class ServerInstance {
 
     private final static int SERVER_PORT = 5056;
+    private GameEngine gameEngine;
 
     private HashMap<String,Thread> clients = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
         ServerInstance serverInstance = new ServerInstance();
-        serverInstance.start();
+        serverInstance.start(args);
     }
 
-    private void start() throws IOException {
+    private void start(String[] args) throws IOException {
         System.out.println("Starting...");
         ServerSocket serverSocket = new ServerSocket(SERVER_PORT);
+
+        int maximumPlayers = 4;
+        if (args.length > 0) {
+            maximumPlayers = Integer.parseInt(args[0]);
+        }
+        this.gameEngine = new GameEngine(maximumPlayers);
 
         // running infinite loop for getting client request
         while (true) {
@@ -37,6 +46,7 @@ public class ServerInstance {
 
                 this.addClient(clientSocket, clientSocketDataInputStream, clientSocketDataOutputStream);
             } catch (Exception e) {
+                System.out.println("Closing client socket.");
                 clientSocket.close();
                 e.printStackTrace();
             }
