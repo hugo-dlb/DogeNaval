@@ -45,6 +45,8 @@ public class GameEngine {
         Player firstPlayer = new ArrayList<>(this.players.values()).get(0);
         this.currentPlayerId = firstPlayer.getId();
     }
+    
+    
 
     private void moveToNextStep() {
         // todo
