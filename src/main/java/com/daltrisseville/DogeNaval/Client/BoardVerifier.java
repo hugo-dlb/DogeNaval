@@ -1,18 +1,19 @@
-package yolo;
+package com.daltrisseville.DogeNaval.Client;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+//import java.util.Arrays;
+//import java.util.stream.Collectors;
+
+import com.daltrisseville.DogeNaval.Server.Entities.Tile;
 
 public class BoardVerifier {
 
 	public static boolean verify(Board b) {
 		ArrayList<Tile> occupiedTiles = new ArrayList<Tile>();
 
-		ArrayList<Integer> expectedLengths = (ArrayList<Integer>) Arrays.stream(b.getExpectedDogList()).boxed()
-				.collect(Collectors.toList());
-
-		if (b.getExpectedDogList().length != b.getDogs().size()) {
+		//ArrayList<Integer> expectedLengths = (ArrayList<Integer>) Arrays.stream(b.getExpectedDogList()).boxed().collect(Collectors.toList());
+		ArrayList<Integer> expectedLengths=b.getExpectedDogList();
+		if (b.getExpectedDogList().size() != b.getDogs().size()) {
 			return false;
 		}
 		for (Dog dog : b.getDogs()) {

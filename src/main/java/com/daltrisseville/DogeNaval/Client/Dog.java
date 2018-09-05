@@ -1,4 +1,4 @@
-package yolo;
+package com.daltrisseville.DogeNaval.Client;
 
 public class Dog {
 	private int length;

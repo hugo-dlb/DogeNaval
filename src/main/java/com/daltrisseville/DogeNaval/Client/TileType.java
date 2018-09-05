@@ -1,6 +1,6 @@
 package com.daltrisseville.DogeNaval.Client;
 
-public enum DogDirection {
-	Horizontal, Vertical
+public enum TileType {
+	Hit, Miss, Empty
 
 }

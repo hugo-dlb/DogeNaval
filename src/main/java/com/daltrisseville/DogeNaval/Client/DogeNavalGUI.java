@@ -1,4 +1,4 @@
-package yolo;
+package com.daltrisseville.DogeNaval.Client;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

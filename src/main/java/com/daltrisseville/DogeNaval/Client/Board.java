@@ -1,4 +1,4 @@
-package yolo;
+package com.daltrisseville.DogeNaval.Client;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -8,22 +8,30 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import com.daltrisseville.DogeNaval.Server.Entities.Tile;
+
 public class Board extends JPanel {
 	private Tile[][] tiles;
 	private ArrayList<Dog> dogs;
 	private int boardSize;
-	private int[] expectedDogList;
+	//private int[] expectedDogList;
+	private ArrayList<Integer> expectedDogList;
 
 	private final Color myGreen = new Color(63, 182, 63); // 51, 204, 51);
 	private final Color myRed = new Color(255, 76, 76);// 255, 51, 0);
 	private final Color myYellow = new Color(255, 211, 0);// 189, 145, 15);
 	private final Color myGray = new Color(57, 49, 49);// 121, 134, 134);
 	private static int BOARD_SIZE = 10;
-	private static int[] BOARD_DOG_LIST = { 3, 4, 5 };
+	private static Integer[] BOARD_DOG_LIST = { 3, 4, 5 };
+	
 
 	public Board() {
 		this.boardSize = BOARD_SIZE;
-		this.expectedDogList = BOARD_DOG_LIST;
+		//this.expectedDogList = BOARD_DOG_LIST;
+		this.expectedDogList=new ArrayList<Integer>();
+		for(int i:BOARD_DOG_LIST){
+			expectedDogList.add(i);
+		}
 		this.dogs = new ArrayList<Dog>();
 		this.tiles = new Tile[boardSize][boardSize];
 
@@ -39,12 +47,10 @@ public class Board extends JPanel {
 		dogs.add(dog);
 	}
 
-	public int[] getExpectedDogList() {
-		return expectedDogList;
-	}
 
-	public void setExpectedDogList(int[] expectedDogList) {
-		this.expectedDogList = expectedDogList;
+
+	public ArrayList<Integer> getExpectedDogList() {
+		return expectedDogList;
 	}
 
 	public static int getBOARD_SIZE() {
