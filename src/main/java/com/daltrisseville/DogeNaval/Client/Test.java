@@ -8,8 +8,8 @@ public class Test {
 		testBoard.addDog(0, 1, 4, DogDirection.Vertical);
 		testBoard.addDog(0, 5, 7, DogDirection.Vertical);
 
-		boolean b = BoardVerifier.verify(testBoard);
-		System.out.println(b);
+		//boolean b = BoardVerifier.verify(testBoard);
+		//System.out.println(b);
 
 	}
 

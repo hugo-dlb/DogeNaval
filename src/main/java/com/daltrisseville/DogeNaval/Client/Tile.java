@@ -1,5 +1,6 @@
 package com.daltrisseville.DogeNaval.Client;
 
+
 public class Tile {
 	private int row;
 	private int col;
