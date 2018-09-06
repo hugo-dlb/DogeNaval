@@ -21,4 +21,8 @@ public class Player {
     public int getId() {
         return this.id;
     }
+    
+    public void upScore(){
+    	this.score++;
+    }
 }

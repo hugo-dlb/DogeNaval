@@ -1,6 +1,5 @@
 package com.daltrisseville.DogeNaval.Server.Entities;
 
-import com.daltrisseville.DogeNaval.Client.TileType;
 
 public class Tile {
 	private int row;

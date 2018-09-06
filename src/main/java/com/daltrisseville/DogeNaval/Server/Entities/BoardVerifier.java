@@ -8,11 +8,61 @@ import com.daltrisseville.DogeNaval.Server.Entities.Tile;
 
 public class BoardVerifier {
 
-	public static boolean verify(PrivateBoard b) {
+	public static boolean gameFinished(PrivateBoard b) {
+		for (Dog dog : b.getDogs()) {
+
+			if (dog.getDirection() == DogDirection.Horizontal) {
+				for (int i = 0; i < dog.getLength(); i++) {
+					if (b.getTiles()[dog.getxStart() + i][dog.getyStart()].getTileType() != TileType.Hit) {
+						return false;
+					}
+				}
+			} else if (dog.getDirection() == DogDirection.Vertical) {
+				for (int j = 0; j < dog.getLength(); j++) {
+					if (b.getTiles()[dog.getxStart()][dog.getyStart() + j].getTileType() != TileType.Hit) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+
+	}
+
+	public static boolean isValidTile(PrivateBoard b, Tile t) {
+		if (t.getRow() >= 0 && t.getRow() < b.getBoardSize() && t.getCol() >= 0 && t.getCol() < b.getBoardSize()
+				&& b.getTiles()[t.getCol()][t.getRow()].getTileType() == TileType.Empty) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean isHit(PrivateBoard b, Tile t) {
+		for (Dog dog : b.getDogs()) {
+
+			if (dog.getDirection() == DogDirection.Horizontal) {
+				for (int i = 0; i < dog.getLength(); i++) {
+					if (dog.getxStart() + i == t.getCol() && dog.getyStart() == t.getRow()) {
+						return true;
+					}
+				}
+			} else if (dog.getDirection() == DogDirection.Vertical) {
+				for (int j = 0; j < dog.getLength(); j++) {
+					if (dog.getxStart() == t.getCol() && dog.getyStart() + j == t.getRow()) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	public static boolean verifyBoardInit(PrivateBoard b) {
 		ArrayList<Tile> occupiedTiles = new ArrayList<Tile>();
 
-		//ArrayList<Integer> expectedLengths = (ArrayList<Integer>) Arrays.stream(b.getExpectedDogList()).boxed().collect(Collectors.toList());
-		ArrayList<Integer> expectedLengths=b.getExpectedDogList();
+		// ArrayList<Integer> expectedLengths = (ArrayList<Integer>)
+		// Arrays.stream(b.getExpectedDogList()).boxed().collect(Collectors.toList());
+		ArrayList<Integer> expectedLengths = b.getExpectedDogList();
 		if (b.getExpectedDogList().size() != b.getDogs().size()) {
 			return false;
 		}
