@@ -10,11 +10,11 @@ public class ServerResponse {
     private boolean gameFinished;
     private int currentPlayerId;
 
-    private PublicBoard publicBoard = null;
+    private GenericBoard publicBoard = null;
     private Player[] players = null;
 
     public ServerResponse(boolean success, String errorCode, boolean connected, boolean gameStarted,
-                          boolean gameFinished, int currentPlayerId, PublicBoard publicBoard,
+                          boolean gameFinished, int currentPlayerId, GenericBoard publicBoard,
                           Player[] players) {
         this.success = success;
         this.errorCode = errorCode;
