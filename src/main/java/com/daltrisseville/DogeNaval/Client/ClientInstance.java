@@ -29,11 +29,13 @@ public class ClientInstance implements MouseListener, ActionListener {
 	private final Color myRed = new Color(255, 76, 76);// 255, 51, 0);
 	private final Color myYellow = new Color(255, 211, 0);// 189, 145, 15);
 	private final Color myGray = new Color(57, 49, 49);// 121, 134, 134);
+	
+	GenericBoard board;
 
-	JFrame frame = new JFrame("CardLayout demo");
+	JFrame frame = new JFrame("DogeNavalClient");
 	JPanel panelCont = new JPanel();
 	JPanel panelFirst = new JPanel();
-	JPanel panelSecond = new JPanel();
+	BoardPanel panelSecond ;
 	JButton buttonOne = new JButton("Switch to second panel/workspace");
 	JButton buttonSecond = new JButton("Switch to first panel/workspace");
 	CardLayout cl = new CardLayout();
@@ -71,6 +73,9 @@ public class ClientInstance implements MouseListener, ActionListener {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		panelCont.setLayout(cl);
+		
+		board=new GenericBoard();
+		panelSecond=new BoardPanel(board);
 
 		panelFirst.add(buttonOne);
 		panelSecond.add(buttonSecond);
@@ -85,13 +90,25 @@ public class ClientInstance implements MouseListener, ActionListener {
 		buttonSecond.setActionCommand("2");
 		buttonOne.addActionListener(this);
 		buttonSecond.addActionListener(this);
+		
+		
+		
 
 		frame.add(panelCont);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);
+		
+		updateBoard(new GenericBoard());
 
 
+	}
+	
+	public void updateBoard(GenericBoard newBoard){
+		 panelSecond.setBoard(newBoard);
+		
+		panelSecond.updateUI();
+		
 	}
 
 	public void start() throws IOException {
