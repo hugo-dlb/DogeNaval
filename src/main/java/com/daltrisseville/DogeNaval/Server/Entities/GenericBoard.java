@@ -20,6 +20,11 @@ public class GenericBoard {
 			}
 		}
 	}
+	public GenericBoard(GenericBoard b){
+		this.boardSize = BOARD_SIZE;
+		this.tiles=b.getTiles();
+		
+	}
 
 	public Tile[][] getTiles() {
 		return tiles;
