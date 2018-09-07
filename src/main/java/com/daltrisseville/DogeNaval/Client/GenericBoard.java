@@ -23,8 +23,14 @@ public class GenericBoard {
 		//for tests
 		this.tiles[0][0].setTileType(TileType.Hit);
 		this.tiles[1][2].setTileType(TileType.Miss);
-		this.tiles[2][2].setTileType(TileType.Hit);
-		this.tiles[4][9].setTileType(TileType.Miss);
+		this.tiles[2][2].setTileType(TileType.Miss);
+		this.tiles[4][9].setTileType(TileType.Hit);
+	}
+	
+	public GenericBoard(GenericBoard b){
+		this.boardSize = BOARD_SIZE;
+		this.tiles=b.getTiles();
+		
 	}
 
 	public Tile[][] getTiles() {

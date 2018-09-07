@@ -4,16 +4,19 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
 
-public class BoardPanel extends JPanel{
+public class BoardPanel extends JPanel {
 	private GenericBoard board;
 	
 	private final Color myGreen = new Color(63, 182, 63); // 51, 204, 51);
 	private final Color myRed = new Color(255, 76, 76);// 255, 51, 0);
 	private final Color myYellow = new Color(255, 211, 0);// 189, 145, 15);
 	private final Color myGray = new Color(57, 49, 49);// 121, 134, 134);
+	private final Color myBlue = new Color(3, 201, 169);
+	private final Color myWhite = new Color(236, 240, 241);
 	
 	public BoardPanel(GenericBoard b){
 		this.board=b;
@@ -61,13 +64,13 @@ public class BoardPanel extends JPanel{
 				
 				switch(this.board.getTiles()[i][j].getTileType()){
 				case Empty:
-					g.setColor(myGreen);
+					g.setColor(myBlue);
 					break;
 				case Hit:
 					g.setColor(myRed);
 					break;
 				case Miss:
-					g.setColor(myGray);
+					g.setColor(myWhite);
 					break;
 				}
 				g.fillRect(j * this.getRectSize(), i * this.getRectSize(), this.getRectSize(), this.getRectSize());
@@ -79,4 +82,7 @@ public class BoardPanel extends JPanel{
 		}
 
 	}
+	 public void mouseClicked(MouseEvent e) {
+	        System.out.println("jj");
+	    }
 }
