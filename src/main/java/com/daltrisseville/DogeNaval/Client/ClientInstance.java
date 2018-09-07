@@ -35,7 +35,6 @@ public class ClientInstance implements MouseListener, ActionListener {
 	private final Color myBlue = new Color(3, 201, 169);
 	private final Color myWhite = new Color(236, 240, 241);
 
-
 	GenericBoard board;
 
 	JFrame frame = new JFrame("DogeNavalClient");
@@ -45,22 +44,20 @@ public class ClientInstance implements MouseListener, ActionListener {
 
 	JPanel secondPage_top = new JPanel();
 	BoardPanel boardPanel;
-	
+
 	JButton buttonOne = new JButton("Switch to second panel/workspace");
 	JButton buttonSecond = new JButton("Switch to first panel/workspace");
 	JButton buttonTest = new JButton("Test");
-	
+
 	CardLayout cl = new CardLayout();
 
 	public ClientInstance() {
 		try {
 
-			// initConnexion();
-
+			initConnexion();
 			initGUI();
-
-			// start();
-			// closeRessources();
+			start();
+			closeRessources();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -100,7 +97,7 @@ public class ClientInstance implements MouseListener, ActionListener {
 		buttonTest.addActionListener(this);
 
 		frame.add(container);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);
 
