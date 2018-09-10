@@ -1,7 +1,6 @@
 package com.daltrisseville.DogeNaval.Server.Authentication;
 
 import com.daltrisseville.DogeNaval.Server.Entities.ClientLoginEvent;
-import com.daltrisseville.DogeNaval.Users.UserHandler;
 
 public class AuthenticationService {
 

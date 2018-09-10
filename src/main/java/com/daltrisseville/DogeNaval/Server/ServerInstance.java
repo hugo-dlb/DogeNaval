@@ -23,7 +23,6 @@ public class ServerInstance {
     }
 
     private void start(String[] args) throws IOException {
-        System.out.println("Starting...");
         ServerSocket serverSocket = new ServerSocket(SERVER_PORT);
 
         int maximumPlayers = 4;
@@ -31,6 +30,8 @@ public class ServerInstance {
             maximumPlayers = Integer.parseInt(args[0]);
         }
         this.gameEngine = new GameEngine(maximumPlayers);
+
+        System.out.println("Server is running on port " + SERVER_PORT + ".");
 
         // running infinite loop for getting client request
         while (true) {
@@ -63,7 +64,7 @@ public class ServerInstance {
         clientHandlerThread.start();
 
         clients.put(uuid, clientHandlerThread);
-        System.out.println("Client " + uuid + " just connected.");
+        System.out.println("Client " + uuid + " connected.");
     }
 
     public void removeClient(String uuid) {

@@ -1,6 +1,8 @@
 package com.daltrisseville.DogeNaval.Server;
 
 import com.daltrisseville.DogeNaval.Server.Authentication.AuthenticationService;
+import com.daltrisseville.DogeNaval.Server.Authentication.User;
+import com.daltrisseville.DogeNaval.Server.Authentication.UserHandler;
 import com.daltrisseville.DogeNaval.Server.Entities.ClientLoginEvent;
 import com.daltrisseville.DogeNaval.Server.Entities.ClientResponse;
 import com.daltrisseville.DogeNaval.Server.Entities.ServerResponse;
@@ -23,7 +25,7 @@ class ClientHandler extends Thread {
     private final DataOutputStream dataOutputStream;
     private final Socket socket;
     private boolean clientIsConnected = true;
-    private boolean clientIsAuthentified = false;
+    private boolean clientIsAuthenticated = false;
 
     public ClientHandler(ServerInstance parentServer, String uuid, Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
         this.parentServer = parentServer;
@@ -40,17 +42,15 @@ class ClientHandler extends Thread {
             System.out.println("test");
             try {
                 System.out.println("1");
-                if (!clientIsAuthentified) {
+                if (!clientIsAuthenticated) {
+                    // player is logged out: handle authentication
                     System.out.println("2");
-                    // handle authentication
                     String loginRequestJSON = this.buildLoginRequest(true);
                     this.dataOutputStream.writeUTF(loginRequestJSON);
-                    System.out.println("2.1");
                     received = this.dataInputStream.readUTF();
-                    System.out.println("2.2");
 
                     try {
-                        System.out.println("4");
+                        System.out.println("3");
                         Gson gson = new Gson();
                         ClientLoginEvent clientLoginEvent = gson.fromJson(received, ClientLoginEvent.class);
 
@@ -58,20 +58,20 @@ class ClientHandler extends Thread {
                         boolean loggedIn = authenticationService.authenticatePlayer(clientLoginEvent);
 
                         if (loggedIn) {
-                            System.out.println("5");
+                            System.out.println("4");
                             System.out.println("OK");
-                            this.clientIsAuthentified = true;
+                            this.clientIsAuthenticated = true;
                         } else {
-                            System.out.println("6");
+                            System.out.println("5");
                         }
                     } catch (Exception e) {
-                        System.out.println("7");
+                        System.out.println("6");
                         System.out.println(e.getMessage());
                         // do nothing
                     }
                 } else {
-                    System.out.println("3");
-                    // todo
+                    // player is logged in: todo
+                    System.out.println("7");
                     this.dataOutputStream.writeUTF("What do you want?\n" +
                             "Type Exit to terminate connection.");
 
@@ -86,8 +86,11 @@ class ClientHandler extends Thread {
                         // for testing purposes only
                         Gson gson = new GsonBuilder().serializeNulls().create();
 
-                        Player p1 = new Player(1, "Hugo", 0, true);
-                        Player p2 = new Player(2, "Arthur", 0, true);
+                        UserHandler userHandler = new UserHandler();
+                        User hugo = userHandler.createUser("hugo", "toto");
+                        User arthur = userHandler.createUser("arthur", "toto");
+                        Player p1 = new Player(hugo, 0, true);
+                        Player p2 = new Player(arthur, 0, true);
                         Player[] players = {p1, p2};
                         ServerResponse responseObject = new ServerResponse(true, null, true, false, false, -1, null, players);
 
