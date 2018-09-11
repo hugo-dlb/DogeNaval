@@ -48,6 +48,7 @@ class ClientHandler extends Thread {
                     String loginRequestJSON = this.buildLoginRequest(true);
                     this.dataOutputStream.writeUTF(loginRequestJSON);
                     received = this.dataInputStream.readUTF();
+                    System.out.println(received);
 
                     try {
                         System.out.println("3");

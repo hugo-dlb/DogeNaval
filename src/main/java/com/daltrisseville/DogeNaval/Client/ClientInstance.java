@@ -17,7 +17,7 @@ public class ClientInstance {
 	DogeNavalGUI gui;
 
 	public ClientInstance() {
-		gui = new DogeNavalGUI();
+		gui = new DogeNavalGUI(this);
 		try {
 			initConnexion();
 			start();
@@ -27,6 +27,7 @@ public class ClientInstance {
 			e.printStackTrace();
 		}
 	}
+	
 
 	public void initConnexion() throws IOException {
 		scanner = new Scanner(System.in);
@@ -48,6 +49,10 @@ public class ClientInstance {
 		dataInputStream.close();
 		dataOutputStream.close();
 	}
+	
+	public void sendDataToServer(String toSend) throws IOException {
+		dataOutputStream.writeUTF(toSend);
+	}
 
 	public void start() throws IOException {
 
@@ -56,7 +61,8 @@ public class ClientInstance {
 		while (true) {
 			System.out.println(dataInputStream.readUTF());
 			String toSend = scanner.nextLine();
-			dataOutputStream.writeUTF(toSend);
+			//dataOutputStream.writeUTF(toSend);
+			sendDataToServer(toSend);
 
 			// If client sends exit,close this connection
 			// and then break from the while loop

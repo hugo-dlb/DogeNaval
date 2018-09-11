@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -25,7 +26,8 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 	int test = 0;
 
-	GenericBoard board;
+	private GenericBoard board;
+	private ClientInstance clientInstance;
 
 	JFrame frame = new JFrame("DogeNavalClient");
 	JPanel container = new JPanel();
@@ -48,8 +50,8 @@ JButton loginButton=new JButton("login");
 	CardLayout cl = new CardLayout();
 	
 	
-	public DogeNavalGUI() {
-
+	public DogeNavalGUI(ClientInstance clientInstance) {
+		this.clientInstance=clientInstance;
 		initGUI();
 		
 		
@@ -138,6 +140,12 @@ JButton loginButton=new JButton("login");
 			String log=loginTextField.getText();
 			String pwd=passwordTextField.getText();
 			System.out.println(log+" "+pwd);
+			try {
+				clientInstance.sendDataToServer(log+" "+pwd);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			break;
 		case "attack":
 			if(boardPanel.getSelectedTile()!=null) {

@@ -11,6 +11,9 @@ public class Tile {
 		this.col = j;
 		this.tileType=TileType.Empty;
 	}
+	public String toString() {
+		return this.col+" - "+this.row;
+	}
 
 	public int getRow() {
 		return row;
