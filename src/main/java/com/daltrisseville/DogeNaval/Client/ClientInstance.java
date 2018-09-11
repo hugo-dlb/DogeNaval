@@ -7,20 +7,18 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
-
 public class ClientInstance {
 	Scanner scanner;
 	InetAddress ip;
 	Socket s;
 	DataInputStream dataInputStream;
 	DataOutputStream dataOutputStream;
-	
+
 	DogeNavalGUI gui;
 
 	public ClientInstance() {
-		gui=new DogeNavalGUI();
+		gui = new DogeNavalGUI();
 		try {
-
 			initConnexion();
 			start();
 			closeRessources();
@@ -75,6 +73,7 @@ public class ClientInstance {
 		}
 
 	}
+
 	public static void main(String[] args) {
 		ClientInstance cli = new ClientInstance();
 

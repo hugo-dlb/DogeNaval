@@ -10,17 +10,29 @@ import javax.swing.JPanel;
 
 public class BoardPanel extends JPanel {
 	private GenericBoard board;
-	
+	private Tile selectedTile;
+
 	private final Color myGreen = new Color(63, 182, 63); // 51, 204, 51);
 	private final Color myRed = new Color(255, 76, 76);// 255, 51, 0);
 	private final Color myYellow = new Color(255, 211, 0);// 189, 145, 15);
 	private final Color myGray = new Color(57, 49, 49);// 121, 134, 134);
 	private final Color myBlue = new Color(3, 201, 169);
 	private final Color myWhite = new Color(236, 240, 241);
-	
-	public BoardPanel(GenericBoard b){
-		this.board=b;
+
+	public BoardPanel(GenericBoard b) {
+		this.board = b;
+		this.selectedTile = null;
 	}
+
+	public int getBoardSize() {
+		return board.getBoardSize();
+
+	}
+
+	public void selectTile(Tile t) {
+		this.selectedTile = t;
+	}
+
 	public int getRectSize() {
 		// return this.rectSize;
 
@@ -54,15 +66,17 @@ public class BoardPanel extends JPanel {
 	public GenericBoard getBoard() {
 		return board;
 	}
+
 	public void setBoard(GenericBoard board) {
 		this.board = board;
 	}
+
 	@Override
 	public void paint(Graphics g) {
 		for (int i = 0; i < this.board.getBoardSize(); i++) {
 			for (int j = 0; j < this.board.getBoardSize(); j++) {
-				
-				switch(this.board.getTiles()[i][j].getTileType()){
+
+				switch (this.board.getTiles()[i][j].getTileType()) {
 				case Empty:
 					g.setColor(myBlue);
 					break;
@@ -80,9 +94,21 @@ public class BoardPanel extends JPanel {
 			}
 
 		}
-
+		if (selectedTile != null) {
+			g.setColor(myRed);
+			for (int i = 0; i < 4; i++) {
+				g.drawRect(selectedTile.getCol() * this.getRectSize() + i,
+						selectedTile.getRow() * this.getRectSize() + i, this.getRectSize() - 2 * i,
+						this.getRectSize() - 2 * i);
+			}
+		}
 	}
-	 public void mouseClicked(MouseEvent e) {
-	        System.out.println("jj");
-	    }
+
+	public Tile getSelectedTile() {
+		return selectedTile;
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		System.out.println("jj");
+	}
 }

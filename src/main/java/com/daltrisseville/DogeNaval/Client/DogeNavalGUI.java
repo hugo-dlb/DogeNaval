@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -12,6 +13,7 @@ import java.awt.event.MouseListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class DogeNavalGUI implements MouseListener, ActionListener {
 	private final Color myGreen = new Color(63, 182, 63); // 51, 204, 51);
@@ -32,10 +34,16 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 	JPanel secondPage_top = new JPanel();
 	BoardPanel boardPanel;
-
+	
+	
+JButton loginButton=new JButton("login");
 	JButton buttonOne = new JButton("Switch to second panel/workspace");
 	JButton buttonSecond = new JButton("Switch to first panel/workspace");
 	JButton buttonTest = new JButton("Test");
+	JButton buttonSendTile=new JButton("Attack!");
+	
+	JTextField loginTextField = new JTextField(10);
+	JTextField passwordTextField = new JTextField(10);
 
 	CardLayout cl = new CardLayout();
 	
@@ -57,10 +65,15 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 		board = new GenericBoard();
 		boardPanel = new BoardPanel(board);
+		
 
+		firstPage.add(loginTextField);
+		firstPage.add(passwordTextField);
+		firstPage.add(loginButton);
 		firstPage.add(buttonOne);
 		secondPage_top.add(buttonSecond);
 		secondPage_top.add(buttonTest);
+		secondPage_top.add(buttonSendTile);
 
 		firstPage.setBackground(myGreen);
 		secondPage_top.setBackground(myGray);
@@ -75,9 +88,13 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		buttonOne.setActionCommand("1");
 		buttonSecond.setActionCommand("2");
 		buttonTest.setActionCommand("3");
+		loginButton.setActionCommand("login");
+		buttonSendTile.setActionCommand("attack");
 		buttonOne.addActionListener(this);
 		buttonSecond.addActionListener(this);
 		buttonTest.addActionListener(this);
+		loginButton.addActionListener(this);
+		buttonSendTile.addActionListener(this);
 
 		frame.add(container);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -117,6 +134,17 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			test++;
 			updateBoard(boardPanel.getBoard());
 			break;
+		case "login":
+			String log=loginTextField.getText();
+			String pwd=passwordTextField.getText();
+			System.out.println(log+" "+pwd);
+			break;
+		case "attack":
+			if(boardPanel.getSelectedTile()!=null) {
+				//send to server
+				System.out.println("Tile sent :"+boardPanel.getSelectedTile().toString());
+			}
+			break;
 		default:
 		}
 
@@ -124,7 +152,16 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		System.out.println(e.getX() + " - " + e.getY());
+		//System.out.println(e.getX() + " - " + e.getY());
+		Point p = e.getPoint();
+		int col = p.x / boardPanel.getRectSize();
+		int row = p.y / boardPanel.getRectSize();
+		if (col < boardPanel.getBoardSize() && row < boardPanel.getBoardSize()) {
+			boardPanel.selectTile(new Tile(row,col));
+			boardPanel.updateUI();
+		}
+
+		System.out.println(col + " " + row);
 
 	}
 
