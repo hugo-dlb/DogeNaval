@@ -37,72 +37,19 @@ class ClientHandler extends Thread {
 
     @Override
     public void run() {
-        String received;
+        this.requestAuthentication();
+
         while (this.clientIsConnected) {
-            System.out.println("test");
             try {
-                System.out.println("1");
                 if (!clientIsAuthenticated) {
-                    // player is logged out: handle authentication
-                    System.out.println("2");
-                    String loginRequestJSON = this.buildLoginRequest(true);
-                    this.dataOutputStream.writeUTF(loginRequestJSON);
-                    received = this.dataInputStream.readUTF();
-
-                    try {
-                        System.out.println("3");
-                        Gson gson = new Gson();
-                        ClientLoginEvent clientLoginEvent = gson.fromJson(received, ClientLoginEvent.class);
-
-                        AuthenticationService authenticationService = new AuthenticationService();
-                        boolean loggedIn = authenticationService.authenticatePlayer(clientLoginEvent);
-
-                        if (loggedIn) {
-                            System.out.println("4");
-                            System.out.println("OK");
-                            this.clientIsAuthenticated = true;
-                        } else {
-                            System.out.println("5");
-                        }
-                    } catch (Exception e) {
-                        System.out.println("6");
-                        System.out.println(e.getMessage());
-                        // do nothing
-                    }
+                    this.requestAuthentication();
                 } else {
-                    // player is logged in: todo
-                    System.out.println("7");
-                    this.dataOutputStream.writeUTF("What do you want?\n" +
-                            "Type Exit to terminate connection.");
-
-                    // receive the answer from client
-                    received = this.dataInputStream.readUTF();
-
-                    if (received.equals("Exit")) {
-                        System.out.println("Client " + this.socket + " sends exit...");
-                        System.out.println("Closing connection...");
-                        this.clientIsConnected = false;
-                    } else {
-                        // for testing purposes only
-                        Gson gson = new GsonBuilder().serializeNulls().create();
-
-                        UserHandler userHandler = new UserHandler();
-                        User hugo = userHandler.createUser("hugo", "toto");
-                        User arthur = userHandler.createUser("arthur", "toto");
-                        Player p1 = new Player(hugo, 0, true);
-                        Player p2 = new Player(arthur, 0, true);
-                        Player[] players = {p1, p2};
-                        ServerResponse responseObject = new ServerResponse(true, null, true, false, false, -1, null, players);
-
-                        String responseJSON = gson.toJson(responseObject);
-                        this.dataOutputStream.writeUTF(responseJSON);
-                    }
+                    this.startMainLoop();
                 }
             } catch (SocketException socketException) {
                 System.out.println("socketException");
                 this.clientIsConnected = false;
-            } catch (IOException exception) {
-                System.out.println("IOException");
+            } catch (Exception exception) {
                 exception.printStackTrace();
             }
         }
@@ -121,12 +68,78 @@ class ClientHandler extends Thread {
         this.dataOutputStream.writeUTF(data);
     }
 
-    private String buildLoginRequest(boolean success) {
+    private String buildResponse(boolean success, String eventType) {
         JsonObject responseObject = new JsonObject();
         responseObject.addProperty("success", success);
-        responseObject.addProperty("eventType", "LOGIN_REQUEST");
+        responseObject.addProperty("eventType", eventType);
 
         Gson gson = new Gson();
         return gson.toJson(responseObject);
+    }
+
+    private void requestAuthentication() {
+        while (this.clientIsConnected && !this.clientIsAuthenticated) {
+            String loginRequestJSON = this.buildResponse(true, "LOGIN_REQUEST");
+            try {
+                this.dataOutputStream.writeUTF(loginRequestJSON);
+                String response = this.dataInputStream.readUTF();
+
+                try {
+                    Gson gson = new Gson();
+
+                    try {
+                        ClientLoginEvent clientLoginEvent = gson.fromJson(response, ClientLoginEvent.class);
+
+                        AuthenticationService authenticationService = new AuthenticationService();
+                        boolean loggedIn = authenticationService.authenticatePlayer(clientLoginEvent);
+
+                        if (loggedIn) {
+                            this.clientIsAuthenticated = true;
+                        }
+                    } catch (Exception e) {
+                        // do nothing
+                        System.out.println("IOException");
+                        e.printStackTrace();
+                    }
+                } catch (Exception e) {
+                    // do nothing
+                    System.out.println("IOException");
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                System.out.println("IOException");
+                e.printStackTrace();
+                this.clientIsConnected = false;
+            }
+        }
+    }
+
+    private void startMainLoop() throws Exception {
+        // player is logged in: todo
+        this.dataOutputStream.writeUTF("What do you want?\n" +
+                "Type Exit to terminate connection.");
+
+        // receive the answer from client
+        String response = this.dataInputStream.readUTF();
+
+        if (response.equals("Exit")) {
+            System.out.println("Client " + this.socket + " sends exit...");
+            System.out.println("Closing connection...");
+            this.clientIsConnected = false;
+        } else {
+            // for testing purposes only
+            Gson gson = new GsonBuilder().serializeNulls().create();
+
+            UserHandler userHandler = new UserHandler();
+            User hugo = userHandler.createUser("hugo", "toto");
+            User arthur = userHandler.createUser("arthur", "toto");
+            Player p1 = new Player(hugo, 0, true);
+            Player p2 = new Player(arthur, 0, true);
+            Player[] players = {p1, p2};
+            ServerResponse responseObject = new ServerResponse(true, null, true, false, false, -1, null, players);
+
+            String responseJSON = gson.toJson(responseObject);
+            this.dataOutputStream.writeUTF(responseJSON);
+        }
     }
 }
