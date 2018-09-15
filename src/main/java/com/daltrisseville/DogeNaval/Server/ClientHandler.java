@@ -50,6 +50,7 @@ class ClientHandler extends Thread {
                 System.out.println("socketException");
                 this.clientIsConnected = false;
             } catch (Exception exception) {
+                System.out.println(exception.getMessage());
                 exception.printStackTrace();
             }
         }
@@ -62,10 +63,6 @@ class ClientHandler extends Thread {
         } catch (IOException exception) {
             exception.printStackTrace();
         }
-    }
-
-    public void emitData(String data) throws IOException {
-        this.dataOutputStream.writeUTF(data);
     }
 
     private String buildResponse(boolean success, String eventType) {
@@ -96,50 +93,51 @@ class ClientHandler extends Thread {
                         if (loggedIn) {
                             this.clientIsAuthenticated = true;
                         }
-                    } catch (Exception e) {
+                    } catch (Exception exception) {
                         // do nothing
-                        System.out.println("IOException");
-                        e.printStackTrace();
+                        System.out.println(exception.getMessage());
+                        exception.printStackTrace();
                     }
-                } catch (Exception e) {
+                } catch (Exception exception) {
                     // do nothing
-                    System.out.println("IOException");
-                    e.printStackTrace();
+                    System.out.println(exception.getMessage());
+                    exception.printStackTrace();
                 }
-            } catch (IOException e) {
-                System.out.println("IOException");
-                e.printStackTrace();
+            } catch (IOException exception) {
+                System.out.println(exception.getMessage());
+                exception.printStackTrace();
                 this.clientIsConnected = false;
             }
         }
     }
 
     private void startMainLoop() throws Exception {
-        // player is logged in: todo
-        this.dataOutputStream.writeUTF("What do you want?\n" +
-                "Type Exit to terminate connection.");
+        while (this.clientIsConnected && this.clientIsAuthenticated) {
+            this.dataOutputStream.writeUTF("What do you want?\n" +
+                    "Type Exit to terminate connection.");
 
-        // receive the answer from client
-        String response = this.dataInputStream.readUTF();
+            // receive the answer from client
+            String response = this.dataInputStream.readUTF();
 
-        if (response.equals("Exit")) {
-            System.out.println("Client " + this.socket + " sends exit...");
-            System.out.println("Closing connection...");
-            this.clientIsConnected = false;
-        } else {
-            // for testing purposes only
-            Gson gson = new GsonBuilder().serializeNulls().create();
+            if (response.equals("Exit")) {
+                System.out.println("Client " + this.socket + " sends exit...");
+                System.out.println("Closing connection...");
+                this.clientIsConnected = false;
+            } else {
+                // for testing purposes only
+                Gson gson = new GsonBuilder().serializeNulls().create();
 
-            UserHandler userHandler = new UserHandler();
-            User hugo = userHandler.createUser("hugo", "toto");
-            User arthur = userHandler.createUser("arthur", "toto");
-            Player p1 = new Player(hugo, 0, true);
-            Player p2 = new Player(arthur, 0, true);
-            Player[] players = {p1, p2};
-            ServerResponse responseObject = new ServerResponse(true, null, true, false, false, -1, null, players);
+                UserHandler userHandler = new UserHandler();
+                User hugo = userHandler.createUser("hugo", "toto");
+                User arthur = userHandler.createUser("arthur", "toto");
+                Player p1 = new Player(hugo, 0, true);
+                Player p2 = new Player(arthur, 0, true);
+                Player[] players = {p1, p2};
+                ServerResponse responseObject = new ServerResponse(true, null, true, false, false, -1, null, players);
 
-            String responseJSON = gson.toJson(responseObject);
-            this.dataOutputStream.writeUTF(responseJSON);
+                String responseJSON = gson.toJson(responseObject);
+                this.dataOutputStream.writeUTF(responseJSON);
+            }
         }
     }
 }
