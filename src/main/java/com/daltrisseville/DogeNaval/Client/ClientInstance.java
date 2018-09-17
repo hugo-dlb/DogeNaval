@@ -7,6 +7,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 public class ClientInstance {
 	Scanner scanner;
 	InetAddress ip;
@@ -81,6 +84,16 @@ public class ClientInstance {
 		}
 
 	}
+	
+    public String buildLoginResponse(String log, String pwd) {
+        JsonObject responseObject = new JsonObject();
+        responseObject.addProperty("login", log);
+        responseObject.addProperty("password", pwd);
+        responseObject.addProperty("eventCode", "LOGIN");
+
+        Gson gson = new Gson();
+        return gson.toJson(responseObject);
+    }
 
 	public static void main(String[] args) {
 		ClientInstance cli = new ClientInstance();

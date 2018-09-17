@@ -109,6 +109,5 @@ public class BoardPanel extends JPanel {
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		System.out.println("jj");
 	}
 }

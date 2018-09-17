@@ -16,6 +16,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.daltrisseville.DogeNaval.Server.Entities.ClientLoginEvent;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 public class DogeNavalGUI implements MouseListener, ActionListener {
 	private final Color myGreen = new Color(63, 182, 63); // 51, 204, 51);
 	private final Color myRed = new Color(255, 76, 76);// 255, 51, 0);
@@ -33,9 +37,13 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	JPanel container = new JPanel();
 	JPanel firstPage = new JPanel();
 	JPanel secondPage = new JPanel();
+	JPanel adminPage=new JPanel();
 
 	JPanel secondPage_top = new JPanel();
+	JPanel adminPage_top=new JPanel();
 	BoardPanel boardPanel;
+	BoardPanel adminPanel;
+	
 	
 	
 JButton loginButton=new JButton("login");
@@ -58,15 +66,33 @@ JButton loginButton=new JButton("login");
 	}
 
 	public void initGUI() {
+		/*
+		for(int i=0;i<100;i++) {
+			JFrame thisframe = new JFrame("DogeNavalClient");
+			thisframe.setMinimumSize(new Dimension(500+i*9, 400+i*7));
+			thisframe.setSize(new Dimension(500, 770));
+			thisframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			thisframe.pack();
+			thisframe.setVisible(true);
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		*/
 		frame.setMinimumSize(new Dimension(400, 400));
 		frame.setSize(new Dimension(500, 770));
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 
 		container.setLayout(cl);
 		secondPage.setLayout(new BorderLayout());
+		adminPage.setLayout(new BorderLayout());
 
 		board = new GenericBoard();
 		boardPanel = new BoardPanel(board);
+		adminPanel=null;
 		
 
 		firstPage.add(loginTextField);
@@ -82,10 +108,16 @@ JButton loginButton=new JButton("login");
 
 		secondPage.add(secondPage_top, BorderLayout.NORTH);
 		secondPage.add(boardPanel, BorderLayout.CENTER);
+		
+		adminPage.add(adminPage_top,BorderLayout.CENTER);
 
 		container.add(firstPage, "1");
 		container.add(secondPage, "2");
-		cl.show(container, "1");
+		container.add(adminPage, "adminPage");
+		
+		switchPanel("firstPanel");
+
+		boardPanel.addMouseListener(this);
 
 		buttonOne.setActionCommand("1");
 		buttonSecond.setActionCommand("2");
@@ -103,8 +135,8 @@ JButton loginButton=new JButton("login");
 		frame.pack();
 		frame.setVisible(true);
 
-		boardPanel.addMouseListener(this);
-
+		
+		
 		// test
 		updateBoard(new GenericBoard());
 
@@ -116,6 +148,22 @@ JButton loginButton=new JButton("login");
 		boardPanel.updateUI();
 
 	}
+	
+	public void switchPanel(String s) {
+		
+		switch(s) {
+		case "firstPanel":
+			cl.show(container, "1");
+		break;
+		case "secondPanel":
+			cl.show(container, "2");
+			break;
+		case "adminPanel":
+			cl.show(container, "admin");
+			break;
+		}
+		
+	}
 
 
 
@@ -123,11 +171,11 @@ JButton loginButton=new JButton("login");
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
 		case "1":
-			cl.show(container, "2");
+			switchPanel("secondPanel");
 			break;
 		case "2":
 
-			cl.show(container, "1");
+			switchPanel("firstPanel");
 
 			break;
 		case "3":
@@ -139,9 +187,10 @@ JButton loginButton=new JButton("login");
 		case "login":
 			String log=loginTextField.getText();
 			String pwd=passwordTextField.getText();
-			System.out.println(log+" "+pwd);
+			String toSend=clientInstance.buildLoginResponse(log,pwd);
+			System.out.println(toSend);
 			try {
-				clientInstance.sendDataToServer(log+" "+pwd);
+				clientInstance.sendDataToServer(toSend);
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -150,7 +199,14 @@ JButton loginButton=new JButton("login");
 		case "attack":
 			if(boardPanel.getSelectedTile()!=null) {
 				//send to server
-				System.out.println("Tile sent :"+boardPanel.getSelectedTile().toString());
+				try {
+					System.out.println("Tile sent :"+boardPanel.getSelectedTile().toString());
+					clientInstance.sendDataToServer(buildTileResponse(boardPanel.getSelectedTile()));
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
 			}
 			break;
 		default:
@@ -196,5 +252,14 @@ JButton loginButton=new JButton("login");
 		// TODO Auto-generated method stub
 
 	}
+    private String buildTileResponse(Tile t) {
+    	Gson gson = new Gson();
+    	JsonObject s = (JsonObject)gson.toJsonTree(t);
+    	s.addProperty("eventType", "PLAY");
+    	
+    	
+        return s.toString();
+    }
+    
 
 }

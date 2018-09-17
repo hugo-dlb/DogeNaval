@@ -80,6 +80,7 @@ class ClientHandler extends Thread {
             try {
                 this.dataOutputStream.writeUTF(loginRequestJSON);
                 String response = this.dataInputStream.readUTF();
+                System.out.println(response);
 
                 try {
                     Gson gson = new Gson();
