@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -33,6 +34,8 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	private GenericBoard board;
 	private PrivateBoard adminBoard;
 	private ClientInstance clientInstance;
+
+	boolean adminMode;
 
 	JFrame frame = new JFrame("DogeNavalClient");
 	JPanel container = new JPanel();
@@ -57,8 +60,10 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	JButton buttonSendTile = new JButton("Attack!");
 
 	// adminPage
+	JLabel labelInfo = new JLabel();
 	JButton buttonValidate = new JButton("Validate");
 	JButton buttonOrientation = new JButton("Switch orientation");
+	JLabel labelOrientation = new JLabel();
 	JButton buttonSendBoard = new JButton("Send board to server");
 
 	CardLayout cl = new CardLayout();
@@ -88,11 +93,15 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		firstPage.add(passwordTextField);
 		firstPage.add(buttonLogin);
 		firstPage.add(buttonOne);
+
 		secondPage_top.add(buttonSecond);
 		secondPage_top.add(buttonTest);
 		secondPage_top.add(buttonSendTile);
+
+		adminPage_top.add(labelInfo);
 		adminPage_top.add(buttonValidate);
 		adminPage_top.add(buttonOrientation);
+		adminPage_top.add(labelOrientation);
 		adminPage_top.add(buttonSendBoard);
 
 		firstPage.setBackground(myGreen);
@@ -101,7 +110,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		secondPage.add(secondPage_top, BorderLayout.NORTH);
 		secondPage.add(boardPanel, BorderLayout.CENTER);
 
-		adminPage.add(adminPage_top, BorderLayout.CENTER);
+		adminPage.add(adminPage_top, BorderLayout.NORTH);
 		adminPage.add(adminPanel, BorderLayout.CENTER);
 
 		container.add(firstPage, "1");
@@ -155,12 +164,18 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 		switchPanel("secondPanel");
 		boardPanel.addMouseListener(this);
+		adminMode = false;
+
 	}
 
 	public void startAdminPanel() {
 
 		switchPanel("adminPanel");
 		adminPanel.addMouseListener(this);
+		adminMode = true;
+		labelInfo.setText(
+				"Place dog length " + adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()));
+		labelOrientation.setText("Horizontal");
 
 	}
 
@@ -225,16 +240,46 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			break;
 		// admin
 		case "validate":
+			if (!adminPanel.isAllPlaced()) {
+				adminPanel.getBoard().addDog(adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()),
+						adminPanel.getSelectedTile().getCol(), adminPanel.getSelectedTile().getRow(),
+						adminPanel.getActualDirection());
+
+				adminPanel.setToPlaceDog(adminPanel.getToPlaceDog() + 1);
+			}
+			if (!adminPanel.isAllPlaced()) {
+				labelInfo.setText("Place dog length "
+						+ adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()));
+			} else {
+
+				labelInfo.setText("All dogs placed, please send");
+			}
 
 			break;
 		case "orientation":
-
+			switchOrientation();
 			break;
 		case "sendBoard":
-
+			try {
+				clientInstance.sendDataToServer(ClientInstance.buildAdminResponse(adminPanel.getBoard()));
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			break;
-			
 		default:
+		}
+
+	}
+
+	public void switchOrientation() {
+		if (adminPanel.getActualDirection() == DogDirection.Horizontal) {
+			adminPanel.setActualDirection(DogDirection.Vertical);
+			labelOrientation.setText("Vertical");
+		} else if (adminPanel.getActualDirection() == DogDirection.Vertical) {
+			adminPanel.setActualDirection(DogDirection.Horizontal);
+			labelOrientation.setText("Horizontal");
+
 		}
 
 	}
@@ -244,11 +289,23 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 		// System.out.println(e.getX() + " - " + e.getY());
 		Point p = e.getPoint();
-		int col = p.x / boardPanel.getRectSize();
-		int row = p.y / boardPanel.getRectSize();
-		if (col < boardPanel.getBoardSize() && row < boardPanel.getBoardSize()) {
-			boardPanel.selectTile(new Tile(row, col));
-			boardPanel.updateUI();
+
+		if (adminMode) {
+			int col = p.x / adminPanel.getRectSize();
+			int row = p.y / adminPanel.getRectSize();
+			if (col < adminPanel.getBoardSize() && row < adminPanel.getBoardSize()) {
+				adminPanel.selectTile(new Tile(row, col));
+				adminPanel.updateUI();
+			}
+
+		} else {
+			int col = p.x / boardPanel.getRectSize();
+			int row = p.y / boardPanel.getRectSize();
+			if (col < boardPanel.getBoardSize() && row < boardPanel.getBoardSize()) {
+				boardPanel.selectTile(new Tile(row, col));
+				boardPanel.updateUI();
+			}
+
 		}
 
 		// System.out.println(col + " " + row);

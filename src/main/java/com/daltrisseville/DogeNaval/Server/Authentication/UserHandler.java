@@ -33,7 +33,7 @@ public class UserHandler {
     public User createUser(String username, String password) {
         User user = new User(username, password);
         this.usersList.add(user);
-        this.saveUsersList();
+        //this.saveUsersList();
         return user;
     }
 

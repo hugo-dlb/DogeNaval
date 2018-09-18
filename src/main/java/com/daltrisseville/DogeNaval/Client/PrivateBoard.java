@@ -22,7 +22,7 @@ public class PrivateBoard extends GenericBoard{
 		
 	}
 
-	public void addDog(int x, int y, int length, DogDirection d) {
+	public void addDog(int length,int x, int y,  DogDirection d) {
 		Dog dog = new Dog(length, x, y, d);
 		dogs.add(dog);
 	}

@@ -129,6 +129,7 @@ class ClientHandler extends Thread {
             this.dataOutputStream.writeUTF(responseJSON);
 
             String response = this.dataInputStream.readUTF();
+            System.out.println(response);
 
             if (response.equals("...")) {
                 // ...
