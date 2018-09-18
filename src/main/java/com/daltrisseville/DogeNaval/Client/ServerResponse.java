@@ -1,7 +1,6 @@
-package com.daltrisseville.DogeNaval.Server.Entities;
+package com.daltrisseville.DogeNaval.Client;
 
 public class ServerResponse {
-
 	private boolean success;
 	private String errorCode;
 	private String eventType = "GAME_STATE_DATA";
@@ -12,6 +11,7 @@ public class ServerResponse {
 
 	private GenericBoard publicBoard = null;
 	private Player[] players = null;
+	
 	private boolean adminOk;
 
 	public ServerResponse(boolean success, String errorCode, boolean connected, boolean gameStarted,
@@ -24,7 +24,15 @@ public class ServerResponse {
 		this.currentPlayerId = currentPlayerId;
 		this.publicBoard = publicBoard;
 		this.players = players;
+		
+		this.adminOk=adminOk;
+	}
 
+	public boolean isAdminOk() {
+		return adminOk;
+	}
+
+	public void setAdminOk(boolean adminOk) {
 		this.adminOk = adminOk;
 	}
 
@@ -98,14 +106,6 @@ public class ServerResponse {
 
 	public void setPlayers(Player[] players) {
 		this.players = players;
-	}
-
-	public boolean isAdminOk() {
-		return adminOk;
-	}
-
-	public void setAdminOk(boolean adminOk) {
-		this.adminOk = adminOk;
 	}
 
 }

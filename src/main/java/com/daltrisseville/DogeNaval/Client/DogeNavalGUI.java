@@ -31,60 +31,48 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	int test = 0;
 
 	private GenericBoard board;
+	private PrivateBoard adminBoard;
 	private ClientInstance clientInstance;
 
 	JFrame frame = new JFrame("DogeNavalClient");
 	JPanel container = new JPanel();
 	JPanel firstPage = new JPanel();
 	JPanel secondPage = new JPanel();
-	JPanel adminPage=new JPanel();
+	JPanel adminPage = new JPanel();
 
 	JPanel secondPage_top = new JPanel();
-	JPanel adminPage_top=new JPanel();
+	JPanel adminPage_top = new JPanel();
 	BoardPanel boardPanel;
-	BoardPanel adminPanel;
-	
-	
-	
-JButton loginButton=new JButton("login");
-	JButton buttonOne = new JButton("Switch to second panel/workspace");
-	JButton buttonSecond = new JButton("Switch to first panel/workspace");
-	JButton buttonTest = new JButton("Test");
-	JButton buttonSendTile=new JButton("Attack!");
-	
+	AdminBoardPanel adminPanel;
+
+	// loginPage
 	JTextField loginTextField = new JTextField(10);
 	JTextField passwordTextField = new JTextField(10);
+	JButton buttonLogin = new JButton("login");
+	JButton buttonOne = new JButton("Switch to second panel/workspace");
+
+	// gamePage
+	JButton buttonSecond = new JButton("Switch to first panel/workspace");
+	JButton buttonTest = new JButton("Test");
+	JButton buttonSendTile = new JButton("Attack!");
+
+	// adminPage
+	JButton buttonValidate = new JButton("Validate");
+	JButton buttonOrientation = new JButton("Switch orientation");
+	JButton buttonSendBoard = new JButton("Send board to server");
 
 	CardLayout cl = new CardLayout();
-	
-	
+
 	public DogeNavalGUI(ClientInstance clientInstance) {
-		this.clientInstance=clientInstance;
+		this.clientInstance = clientInstance;
 		initGUI();
-		
-		
+
 	}
 
 	public void initGUI() {
-		/*
-		for(int i=0;i<100;i++) {
-			JFrame thisframe = new JFrame("DogeNavalClient");
-			thisframe.setMinimumSize(new Dimension(500+i*9, 400+i*7));
-			thisframe.setSize(new Dimension(500, 770));
-			thisframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			thisframe.pack();
-			thisframe.setVisible(true);
-			try {
-				Thread.sleep(20);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		*/
+
 		frame.setMinimumSize(new Dimension(400, 400));
 		frame.setSize(new Dimension(500, 770));
-		
 
 		container.setLayout(cl);
 		secondPage.setLayout(new BorderLayout());
@@ -92,51 +80,65 @@ JButton loginButton=new JButton("login");
 
 		board = new GenericBoard();
 		boardPanel = new BoardPanel(board);
-		adminPanel=null;
-		
+
+		adminBoard = new PrivateBoard();
+		adminPanel = new AdminBoardPanel(adminBoard);
 
 		firstPage.add(loginTextField);
 		firstPage.add(passwordTextField);
-		firstPage.add(loginButton);
+		firstPage.add(buttonLogin);
 		firstPage.add(buttonOne);
 		secondPage_top.add(buttonSecond);
 		secondPage_top.add(buttonTest);
 		secondPage_top.add(buttonSendTile);
+		adminPage_top.add(buttonValidate);
+		adminPage_top.add(buttonOrientation);
+		adminPage_top.add(buttonSendBoard);
 
 		firstPage.setBackground(myGreen);
 		secondPage_top.setBackground(myGray);
 
 		secondPage.add(secondPage_top, BorderLayout.NORTH);
 		secondPage.add(boardPanel, BorderLayout.CENTER);
-		
-		adminPage.add(adminPage_top,BorderLayout.CENTER);
+
+		adminPage.add(adminPage_top, BorderLayout.CENTER);
+		adminPage.add(adminPanel, BorderLayout.CENTER);
 
 		container.add(firstPage, "1");
 		container.add(secondPage, "2");
 		container.add(adminPage, "adminPage");
-		
+
 		switchPanel("firstPanel");
 
-		boardPanel.addMouseListener(this);
+		// boardPanel.addMouseListener(this);
 
+		buttonLogin.setActionCommand("login");
 		buttonOne.setActionCommand("1");
+
 		buttonSecond.setActionCommand("2");
 		buttonTest.setActionCommand("3");
-		loginButton.setActionCommand("login");
 		buttonSendTile.setActionCommand("attack");
+
+		buttonValidate.setActionCommand("validate");
+		buttonOrientation.setActionCommand("orientation");
+		buttonSendBoard.setActionCommand("sendBoard");
+
+		buttonLogin.addActionListener(this);
 		buttonOne.addActionListener(this);
+
 		buttonSecond.addActionListener(this);
 		buttonTest.addActionListener(this);
-		loginButton.addActionListener(this);
 		buttonSendTile.addActionListener(this);
+
+		buttonValidate.addActionListener(this);
+		buttonOrientation.addActionListener(this);
+		buttonSendBoard.addActionListener(this);
 
 		frame.add(container);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);
 
-		
-		
 		// test
 		updateBoard(new GenericBoard());
 
@@ -148,47 +150,45 @@ JButton loginButton=new JButton("login");
 		boardPanel.updateUI();
 
 	}
-	
+
+	public void startGamePanel() {
+
+		switchPanel("secondPanel");
+		boardPanel.addMouseListener(this);
+	}
+
+	public void startAdminPanel() {
+
+		switchPanel("adminPanel");
+		adminPanel.addMouseListener(this);
+
+	}
+
 	public void switchPanel(String s) {
-		
-		switch(s) {
+
+		switch (s) {
 		case "firstPanel":
 			cl.show(container, "1");
-		break;
+			break;
 		case "secondPanel":
 			cl.show(container, "2");
 			break;
 		case "adminPanel":
-			cl.show(container, "admin");
+			cl.show(container, "adminPage");
 			break;
 		}
-		
 	}
-
-
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
-		case "1":
-			switchPanel("secondPanel");
-			break;
-		case "2":
 
-			switchPanel("firstPanel");
-
-			break;
-		case "3":
-			// Tests
-			boardPanel.getBoard().getTiles()[test][test].setTileType(TileType.Miss);
-			test++;
-			updateBoard(boardPanel.getBoard());
-			break;
+		// login
 		case "login":
-			String log=loginTextField.getText();
-			String pwd=passwordTextField.getText();
-			String toSend=clientInstance.buildLoginResponse(log,pwd);
-			System.out.println(toSend);
+			String log = loginTextField.getText();
+			String pwd = passwordTextField.getText();
+			String toSend = ClientInstance.buildLoginResponse(log, pwd);
+			// System.out.println(toSend);
 			try {
 				clientInstance.sendDataToServer(toSend);
 			} catch (IOException e1) {
@@ -196,19 +196,44 @@ JButton loginButton=new JButton("login");
 				e1.printStackTrace();
 			}
 			break;
+		case "1":
+			startGamePanel();
+			break;
+
+		// game
+		case "2":
+			// switchPanel("firstPanel");
+			break;
+		case "3":
+			// Tests
+			boardPanel.getBoard().getTiles()[test][test].setTileType(TileType.Miss);
+			test++;
+			updateBoard(boardPanel.getBoard());
+			break;
+
 		case "attack":
-			if(boardPanel.getSelectedTile()!=null) {
-				//send to server
+			if (boardPanel.getSelectedTile() != null) {
+				// send to server
 				try {
-					System.out.println("Tile sent :"+boardPanel.getSelectedTile().toString());
-					clientInstance.sendDataToServer(buildTileResponse(boardPanel.getSelectedTile()));
+					System.out.println("Tile sent :" + boardPanel.getSelectedTile().toString());
+					clientInstance.sendDataToServer(ClientInstance.buildTileResponse(boardPanel.getSelectedTile()));
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
 			}
 			break;
+		// admin
+		case "validate":
+
+			break;
+		case "orientation":
+
+			break;
+		case "sendBoard":
+
+			break;
+			
 		default:
 		}
 
@@ -216,16 +241,17 @@ JButton loginButton=new JButton("login");
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		//System.out.println(e.getX() + " - " + e.getY());
+
+		// System.out.println(e.getX() + " - " + e.getY());
 		Point p = e.getPoint();
 		int col = p.x / boardPanel.getRectSize();
 		int row = p.y / boardPanel.getRectSize();
 		if (col < boardPanel.getBoardSize() && row < boardPanel.getBoardSize()) {
-			boardPanel.selectTile(new Tile(row,col));
+			boardPanel.selectTile(new Tile(row, col));
 			boardPanel.updateUI();
 		}
 
-		System.out.println(col + " " + row);
+		// System.out.println(col + " " + row);
 
 	}
 
@@ -252,14 +278,5 @@ JButton loginButton=new JButton("login");
 		// TODO Auto-generated method stub
 
 	}
-    private String buildTileResponse(Tile t) {
-    	Gson gson = new Gson();
-    	JsonObject s = (JsonObject)gson.toJsonTree(t);
-    	s.addProperty("eventType", "PLAY");
-    	
-    	
-        return s.toString();
-    }
-    
 
 }

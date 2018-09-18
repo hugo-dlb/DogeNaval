@@ -16,6 +16,7 @@ public class ClientInstance {
 	Socket s;
 	DataInputStream dataInputStream;
 	DataOutputStream dataOutputStream;
+	boolean myTurn;
 
 	DogeNavalGUI gui;
 
@@ -23,7 +24,8 @@ public class ClientInstance {
 		gui = new DogeNavalGUI(this);
 		try {
 			initConnexion();
-			start();
+			//start();
+			awaitServerUpdate();
 			closeRessources();
 
 		} catch (Exception e) {
@@ -82,17 +84,45 @@ public class ClientInstance {
 			String received = dataInputStream.readUTF();
 			System.out.println(received);
 		}
+		
+		
 
 	}
 	
-    public String buildLoginResponse(String log, String pwd) {
+	public void awaitServerUpdate() throws IOException {
+		while (true) {
+			System.out.println("Wait For Server Update");
+			String received = dataInputStream.readUTF();
+			System.out.println(received);
+			
+			Gson gson = new Gson();
+			ServerResponse serverResponse = gson.fromJson(received, ServerResponse.class);
+			
+			if(serverResponse.isAdminOk()) { // start admin board
+				gui.startAdminPanel();
+			}else { 
+				//gui.startAdminPanel();
+			}
+		}
+	}
+	
+    public static String buildLoginResponse(String log, String pwd) {
         JsonObject responseObject = new JsonObject();
-        responseObject.addProperty("login", log);
+        responseObject.addProperty("username", log);
         responseObject.addProperty("password", pwd);
         responseObject.addProperty("eventCode", "LOGIN");
 
         Gson gson = new Gson();
         return gson.toJson(responseObject);
+    }
+    
+    public static String buildTileResponse(Tile t) {
+    	Gson gson = new Gson();
+    	JsonObject s = (JsonObject)gson.toJsonTree(t);
+    	s.addProperty("eventCode", "PLAY");
+    	
+    	
+        return s.toString();
     }
 
 	public static void main(String[] args) {

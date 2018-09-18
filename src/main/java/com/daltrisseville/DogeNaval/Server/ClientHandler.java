@@ -134,7 +134,8 @@ class ClientHandler extends Thread {
                 Player p1 = new Player(hugo, 0, true);
                 Player p2 = new Player(arthur, 0, true);
                 Player[] players = {p1, p2};
-                ServerResponse responseObject = new ServerResponse(true, null, true, false, false, -1, null, players);
+                boolean adminOk=true;
+                ServerResponse responseObject = new ServerResponse(true, null, true, false, false, -1, null, players, adminOk);
 
                 String responseJSON = gson.toJson(responseObject);
                 this.dataOutputStream.writeUTF(responseJSON);
