@@ -114,31 +114,26 @@ class ClientHandler extends Thread {
 
     private void startMainLoop() throws Exception {
         while (this.clientIsConnected && this.clientIsAuthenticated) {
-            this.dataOutputStream.writeUTF("What do you want?\n" +
-                    "Type Exit to terminate connection.");
+            Gson gson = new GsonBuilder().serializeNulls().create();
 
-            // receive the answer from client
+            UserHandler userHandler = new UserHandler();
+            User hugo = userHandler.createUser("hugo", "toto");
+            User arthur = userHandler.createUser("arthur", "toto");
+            Player p1 = new Player(hugo, 0, true);
+            Player p2 = new Player(arthur, 0, true);
+            Player[] players = {p1, p2};
+            boolean adminOk=true;
+            ServerResponse responseObject = new ServerResponse(true, null, true, false, false, -1, null, players, adminOk);
+
+            String responseJSON = gson.toJson(responseObject);
+            this.dataOutputStream.writeUTF(responseJSON);
+
             String response = this.dataInputStream.readUTF();
 
-            if (response.equals("Exit")) {
-                System.out.println("Client " + this.socket + " sends exit...");
-                System.out.println("Closing connection...");
-                this.clientIsConnected = false;
+            if (response.equals("...")) {
+                // ...
             } else {
-                // for testing purposes only
-                Gson gson = new GsonBuilder().serializeNulls().create();
-
-                UserHandler userHandler = new UserHandler();
-                User hugo = userHandler.createUser("hugo", "toto");
-                User arthur = userHandler.createUser("arthur", "toto");
-                Player p1 = new Player(hugo, 0, true);
-                Player p2 = new Player(arthur, 0, true);
-                Player[] players = {p1, p2};
-                boolean adminOk=true;
-                ServerResponse responseObject = new ServerResponse(true, null, true, false, false, -1, null, players, adminOk);
-
-                String responseJSON = gson.toJson(responseObject);
-                this.dataOutputStream.writeUTF(responseJSON);
+                // ...
             }
         }
     }
