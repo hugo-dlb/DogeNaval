@@ -26,7 +26,11 @@ public class PrivateBoard extends GenericBoard{
 		Dog dog = new Dog(length, x, y, d);
 		dogs.add(dog);
 	}
+	public void addDog(Dog dog) {
+		dogs.add(dog);
+	}
 
+	
 	public ArrayList<Integer> getExpectedDogList() {
 		return expectedDogList;
 	}

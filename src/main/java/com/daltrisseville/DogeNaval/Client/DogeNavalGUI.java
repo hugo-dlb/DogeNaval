@@ -240,10 +240,12 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			break;
 		// admin
 		case "validate":
-			if (!adminPanel.isAllPlaced()) {
-				adminPanel.getBoard().addDog(adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()),
-						adminPanel.getSelectedTile().getCol(), adminPanel.getSelectedTile().getRow(),
-						adminPanel.getActualDirection());
+			Dog newDog=new Dog(adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()),
+					adminPanel.getSelectedTile().getCol(), adminPanel.getSelectedTile().getRow(),
+					adminPanel.getActualDirection());
+			
+			if (!adminPanel.isAllPlaced()&&BoardVerifier.isValidDog(adminPanel.getBoard(), newDog)) {
+				adminPanel.getBoard().addDog(newDog);
 
 				adminPanel.setToPlaceDog(adminPanel.getToPlaceDog() + 1);
 			}
