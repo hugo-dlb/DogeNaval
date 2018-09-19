@@ -8,6 +8,29 @@ import com.daltrisseville.DogeNaval.Server.Entities.Tile;
 
 public class BoardVerifier {
 
+	public static boolean isValidDog(PrivateBoard b, Dog dog) { //to test
+		if (dog.getDirection() == DogDirection.Horizontal) {
+			for (int i = 0; i < dog.getLength(); i++) {
+				if (!(dog.getxStart() + i >= 0 && dog.getxStart() + i < b.getBoardSize() && dog.getyStart() >= 0
+						&& dog.getyStart() < b.getBoardSize())) {
+					return false;
+
+				}
+			}
+
+		} else if (dog.getDirection() == DogDirection.Vertical) {
+			for (int j = 0; j < dog.getLength(); j++) {
+				if (!(dog.getxStart() >= 0 && dog.getxStart() < b.getBoardSize() && dog.getyStart() + j >= 0
+						&& dog.getyStart() + j < b.getBoardSize())) {
+					return false;
+				}
+			}
+
+		}
+		return true;
+
+	}
+
 	public static boolean gameFinished(PrivateBoard b) {
 		for (Dog dog : b.getDogs()) {
 
