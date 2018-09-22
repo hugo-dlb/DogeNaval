@@ -2,6 +2,25 @@
   {
     "id": 1,
     "username": "admin",
-    "password": "admin"
+    "password": "admin",
+    "level": "ADMIN"
+  },
+  {
+    "id": 2,
+    "username": "hugo",
+    "password": "hugo",
+    "level": "USER"
+  },
+  {
+    "id": 3,
+    "username": "arthur",
+    "password": "arthur",
+    "level": "USER"
+  },
+  {
+    "id": 4,
+    "username": "eric",
+    "password": "eric",
+    "level": "USER"
   }
 ]

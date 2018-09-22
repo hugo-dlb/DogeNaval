@@ -16,10 +16,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.daltrisseville.DogeNaval.Server.Entities.ClientLoginEvent;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 public class DogeNavalGUI implements MouseListener, ActionListener {
 	private final Color myGreen = new Color(63, 182, 63); // 51, 204, 51);
 	private final Color myRed = new Color(255, 76, 76);// 255, 51, 0);

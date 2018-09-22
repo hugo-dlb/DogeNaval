@@ -3,6 +3,7 @@ package com.daltrisseville.DogeNaval.Server.Authentication;
 import java.io.*;
 import java.util.*;
 
+import com.daltrisseville.DogeNaval.Server.Entities.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -19,19 +20,20 @@ public class UserHandler {
         this.loadUsersList();
     }
 
-    public boolean checkUserAuthentication(String username, String password) {
+    public User checkUserAuthentication(String username, String password) {
         for (Iterator<User> i = this.usersList.iterator(); i.hasNext(); ) {
             User currentUser = i.next();
             if (currentUser.getUsername().equals(username)
                     && currentUser.getPassword().equals(password)) {
-                return true;
+                return currentUser;
             }
         }
-        return false;
+
+        return null;
     }
 
-    public User createUser(String username, String password) {
-        User user = new User(username, password);
+    public User createUser(String username, String password, String level) {
+        User user = new User(username, password, level);
         this.usersList.add(user);
         this.saveUsersList();
         return user;

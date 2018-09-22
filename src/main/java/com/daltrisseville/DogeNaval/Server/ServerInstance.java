@@ -15,7 +15,7 @@ public class ServerInstance {
     private final static int SERVER_PORT = 5056;
     private GameEngine gameEngine;
 
-    private HashMap<String,Thread> clients = new HashMap<>();
+    private HashMap<String,ClientHandler> clients = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
         ServerInstance serverInstance = new ServerInstance();
@@ -29,7 +29,7 @@ public class ServerInstance {
         if (args.length > 0) {
             maximumPlayers = Integer.parseInt(args[0]);
         }
-        this.gameEngine = new GameEngine(maximumPlayers);
+        this.gameEngine = new GameEngine(this, maximumPlayers);
 
         System.out.println("Server is running on port " + SERVER_PORT + ".");
 
@@ -58,7 +58,7 @@ public class ServerInstance {
         String uuid = UUID.randomUUID().toString();
 
         // create a new thread
-        Thread clientHandlerThread = new ClientHandler(this, uuid, clientSocket, dataInputStream, dataOutputStream);
+        ClientHandler clientHandlerThread = new ClientHandler(this, uuid, clientSocket, dataInputStream, dataOutputStream);
 
         // invoking the start() method
         clientHandlerThread.start();
@@ -70,5 +70,19 @@ public class ServerInstance {
     public void removeClient(String uuid) {
         this.clients.remove(uuid);
         System.out.println("Client " + uuid + " disconnected.");
+    }
+
+    public void broadcastData (String data) {
+        for (String key : this.clients.keySet()) {
+            try {
+                this.clients.get(key).emitData(data);
+            } catch (Exception exception) {
+                // do nothing
+            }
+        }
+    }
+
+    public GameEngine getGameEngine() {
+        return this.gameEngine;
     }
 }

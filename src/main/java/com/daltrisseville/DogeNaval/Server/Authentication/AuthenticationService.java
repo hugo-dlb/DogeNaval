@@ -1,16 +1,16 @@
 package com.daltrisseville.DogeNaval.Server.Authentication;
 
-import com.daltrisseville.DogeNaval.Server.Entities.ClientLoginEvent;
+import com.daltrisseville.DogeNaval.Server.Entities.Communications.ClientResponse;
+import com.daltrisseville.DogeNaval.Server.Entities.User;
 
 public class AuthenticationService {
 
-    public boolean authenticatePlayer(ClientLoginEvent clientLoginEvent) {
-        if (clientLoginEvent.getEventCode().equals("LOGIN")) {
+    public User authenticatePlayer(ClientResponse loginEventClientRequest) {
+        if (loginEventClientRequest.getEventType().equals("LOGIN")) {
             UserHandler handler = new UserHandler();
-        	System.out.println("authService : "+handler.checkUserAuthentication(clientLoginEvent.getUsername(), clientLoginEvent.getPassword()));
-            return handler.checkUserAuthentication(clientLoginEvent.getUsername(), clientLoginEvent.getPassword());
+            return handler.checkUserAuthentication(loginEventClientRequest.getUsername(), loginEventClientRequest.getPassword());
         } else {
-            return false;
+            return null;
         }
     }
 }

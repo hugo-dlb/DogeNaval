@@ -4,7 +4,6 @@ public class ServerResponse {
 	private boolean success;
 	private String errorCode;
 	private String eventType = "GAME_STATE_DATA";
-	private boolean connected;
 	private boolean gameStarted;
 	private boolean gameFinished;
 	private int currentPlayerId;
@@ -14,11 +13,10 @@ public class ServerResponse {
 	
 	private boolean adminOk;
 
-	public ServerResponse(boolean success, String errorCode, boolean connected, boolean gameStarted,
+	public ServerResponse(boolean success, String errorCode, boolean gameStarted,
 			boolean gameFinished, int currentPlayerId, GenericBoard publicBoard, Player[] players, boolean adminOk) {
 		this.success = success;
 		this.errorCode = errorCode;
-		this.connected = connected;
 		this.gameStarted = gameStarted;
 		this.gameFinished = gameFinished;
 		this.currentPlayerId = currentPlayerId;
@@ -58,14 +56,6 @@ public class ServerResponse {
 
 	public void setEventType(String eventType) {
 		this.eventType = eventType;
-	}
-
-	public boolean isConnected() {
-		return connected;
-	}
-
-	public void setConnected(boolean connected) {
-		this.connected = connected;
 	}
 
 	public boolean isGameStarted() {

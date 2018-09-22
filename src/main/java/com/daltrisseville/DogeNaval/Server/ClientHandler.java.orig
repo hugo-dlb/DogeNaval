@@ -124,7 +124,12 @@ public class ClientHandler extends Thread {
 
                 Gson gson = new Gson();
 
+<<<<<<< Updated upstream
+            String response = this.dataInputStream.readUTF();
+            System.out.println(response);
+=======
                 ClientResponse clientResponse = gson.fromJson(response, ClientResponse.class);
+>>>>>>> Stashed changes
 
                 switch (clientResponse.getEventType()) {
                     case "todo":

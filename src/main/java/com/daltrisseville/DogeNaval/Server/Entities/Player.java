@@ -1,21 +1,19 @@
 package com.daltrisseville.DogeNaval.Server.Entities;
 
-import com.daltrisseville.DogeNaval.Server.Authentication.User;
-
 public class Player {
 
     private User user;
     private int score;
-    private boolean isConnected;
+    private boolean connected;
 
-    public Player(User user, int score, boolean isConnected) {
+    public Player(User user, int score, boolean connected) {
         this.user = user;
         this.score = score;
-        this.isConnected = isConnected;
+        this.connected = connected;
     }
 
     public String toString() {
-        return this.user.getUsername() + "(" + this.score + ") points, " + (this.isConnected ? "connected" : "disconnected") + ".";
+        return this.user.getUsername() + "(" + this.score + ") points, " + (this.connected ? "connected" : "disconnected") + ".";
     }
 
     public int getId() {
@@ -24,5 +22,9 @@ public class Player {
     
     public void upScore(){
     	this.score++;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
     }
 }
