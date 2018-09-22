@@ -77,10 +77,10 @@ public class ClientHandler extends Thread {
 
                 Gson gson = new Gson();
 
-                ClientResponse loginEventClientRequest = gson.fromJson(response, ClientResponse.class);
+                ClientResponse clientResponse = gson.fromJson(response, ClientResponse.class);
 
                 AuthenticationService authenticationService = new AuthenticationService();
-                User user = authenticationService.authenticatePlayer(loginEventClientRequest);
+                User user = authenticationService.authenticatePlayer(clientResponse);
 
                 if (user != null) {
                     Player player = new Player(user, 0, true);
