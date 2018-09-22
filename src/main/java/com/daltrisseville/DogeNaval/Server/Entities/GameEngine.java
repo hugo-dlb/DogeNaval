@@ -31,10 +31,10 @@ public class GameEngine {
 	}
 
 	public void addPlayer(String playerThreadUUID, Player player) throws Exception {
-		if (this.players.size() < this.maximumPlayers) {
+		if (!isGameFull()) {
 			this.players.put(playerThreadUUID, player);
 
-			if (this.players.size() == this.maximumPlayers) {
+			if (this.isGameFull()) {
 				this.gameStarted = true;
 			}
 		} else {
@@ -116,7 +116,7 @@ public class GameEngine {
 				null,
 				this.getPlayers(),
 				-1,
-				this.players.size() < this.maximumPlayers
+				this.isGameFull()
 		);
 
 		Gson gson = new GsonBuilder().serializeNulls().create();
@@ -139,5 +139,9 @@ public class GameEngine {
 		}
 
 		return players;
+	}
+
+	public boolean isGameFull() {
+		return this.players.size() >= this.maximumPlayers;
 	}
 }

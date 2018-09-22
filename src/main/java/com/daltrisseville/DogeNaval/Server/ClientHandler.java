@@ -6,6 +6,7 @@ import com.daltrisseville.DogeNaval.Server.Entities.Communications.ServerRequest
 import com.daltrisseville.DogeNaval.Server.Entities.Player;
 import com.daltrisseville.DogeNaval.Server.Entities.User;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import java.io.DataInputStream;
@@ -59,19 +60,10 @@ public class ClientHandler extends Thread {
         }
     }
 
-    private String buildResponse(boolean success, String eventType) {
-        JsonObject responseObject = new JsonObject();
-        responseObject.addProperty("success", success);
-        responseObject.addProperty("eventType", eventType);
-
-        Gson gson = new Gson();
-        return gson.toJson(responseObject);
-    }
-
     private void requestAuthentication() {
         while (this.clientIsConnected && !this.clientIsAuthenticated) {
             try {
-                String loginRequestJSON = this.buildResponse(true, "LOGIN_REQUEST");
+                String loginRequestJSON = this.buildLoginRequest();
                 this.emitData(loginRequestJSON);
                 String response = this.dataInputStream.readUTF();
 
@@ -117,7 +109,7 @@ public class ClientHandler extends Thread {
     }
 
     private void startMainLoop() {
-        while (this.clientIsConnected && !this.clientIsAuthenticated) {
+        while (this.clientIsConnected && this.clientIsAuthenticated) {
             try {
                 this.serverInstance.getGameEngine().broadcastGameState();
                 String response = this.dataInputStream.readUTF();
@@ -145,5 +137,13 @@ public class ClientHandler extends Thread {
 
     public void emitData(String data) throws Exception {
         this.dataOutputStream.writeUTF(data);
+    }
+
+    private String buildLoginRequest() {
+        ServerRequest serverRequest = new ServerRequest("LOGIN_REQUEST", false, false, -1, null, null, -1, this.serverInstance.getGameEngine().isGameFull());
+
+        Gson gson = new GsonBuilder().serializeNulls().create();
+
+        return gson.toJson(serverRequest);
     }
 }

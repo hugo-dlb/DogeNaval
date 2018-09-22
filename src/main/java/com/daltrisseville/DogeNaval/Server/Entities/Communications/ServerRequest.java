@@ -5,7 +5,6 @@ import com.daltrisseville.DogeNaval.Server.Entities.Player;
 
 public class ServerRequest {
 
-	private String errorCode;
 	private String eventType;
 	private boolean gameStarted;
 	private boolean gameFinished;
@@ -15,9 +14,9 @@ public class ServerRequest {
 	private int playerId;
 	private boolean gameFull;
 
-	public ServerRequest(String errorCode, boolean gameStarted,
+	public ServerRequest(String eventType, boolean gameStarted,
                          boolean gameFinished, int currentPlayerId, GenericBoard publicBoard, Player[] players, int playerId, boolean gameFull) {
-		this.errorCode = errorCode;
+		this.eventType = eventType;
 		this.gameStarted = gameStarted;
 		this.gameFinished = gameFinished;
 		this.currentPlayerId = currentPlayerId;
@@ -25,14 +24,6 @@ public class ServerRequest {
 		this.players = players;
 		this.playerId = playerId;
 		this.gameFull = gameFull;
-	}
-
-	public String getErrorCode() {
-		return errorCode;
-	}
-
-	public void setErrorCode(String errorCode) {
-		this.errorCode = errorCode;
 	}
 
 	public String getEventType() {
