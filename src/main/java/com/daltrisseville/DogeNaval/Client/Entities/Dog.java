@@ -1,4 +1,4 @@
-package com.daltrisseville.DogeNaval.Client;
+package com.daltrisseville.DogeNaval.Client.Entities;
 
 public class Dog {
 	private int length;

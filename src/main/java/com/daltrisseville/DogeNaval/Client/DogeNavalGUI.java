@@ -17,6 +17,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.daltrisseville.DogeNaval.Client.Entities.BoardVerifier;
+import com.daltrisseville.DogeNaval.Client.Entities.Dog;
+import com.daltrisseville.DogeNaval.Client.Entities.DogDirection;
+import com.daltrisseville.DogeNaval.Client.Entities.GenericBoard;
+import com.daltrisseville.DogeNaval.Client.Entities.PrivateBoard;
+import com.daltrisseville.DogeNaval.Client.Entities.Tile;
+import com.daltrisseville.DogeNaval.Client.Entities.TileType;
+
 public class DogeNavalGUI implements MouseListener, ActionListener {
 	private final Color myGreen = new Color(63, 182, 63); // 51, 204, 51);
 	private final Color myRed = new Color(255, 76, 76);// 255, 51, 0);
@@ -199,7 +207,10 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			String log = loginTextField.getText();
 			String pwd = passwordTextField.getText();
 			String toSend = ClientInstance.buildLoginResponse(log, pwd);
-			// System.out.println(toSend);
+			
+			String s =ClientInstance.buildAdminResponse(adminPanel.getBoard());
+			
+		
 			try {
 				clientInstance.sendDataToServer(toSend);
 			} catch (IOException e1) {
@@ -259,6 +270,13 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			break;
 		case "sendBoard":
 			try {
+				/*
+				String s =ClientInstance.buildAdminResponse(adminPanel.getBoard());
+				
+				Gson gson = new Gson();
+				ClientResponse c = gson.fromJson(s, ClientResponse.class);
+				clientInstance.sendDataToServer(c.toString());
+				*/
 				clientInstance.sendDataToServer(ClientInstance.buildAdminResponse(adminPanel.getBoard()));
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block

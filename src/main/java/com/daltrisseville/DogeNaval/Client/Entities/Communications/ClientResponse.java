@@ -1,7 +1,7 @@
-package com.daltrisseville.DogeNaval.Server.Entities.Communications;
+package com.daltrisseville.DogeNaval.Client.Entities.Communications;
 
-import com.daltrisseville.DogeNaval.Server.Entities.PrivateBoard;
-import com.daltrisseville.DogeNaval.Server.Entities.Tile;
+import com.daltrisseville.DogeNaval.Client.Entities.PrivateBoard;
+import com.daltrisseville.DogeNaval.Client.Entities.Tile;
 
 public class ClientResponse {
 	private String eventType;
@@ -9,9 +9,9 @@ public class ClientResponse {
 	private String password;
 	private Tile selectedTile;
 	private PrivateBoard adminBoard;
+	
 
-	public ClientResponse(String eventType, String username, String password, Tile selectedTile,
-			PrivateBoard adminBoard) {
+	public ClientResponse(String eventType, String username, String password, Tile selectedTile, PrivateBoard adminBoard) {
 		this.eventType = eventType;
 		this.username = username;
 		this.password = password;
@@ -26,6 +26,8 @@ public class ClientResponse {
 	public void setEventType(String eventType) {
 		this.eventType = eventType;
 	}
+
+
 
 	public String getUsername() {
 		return username;

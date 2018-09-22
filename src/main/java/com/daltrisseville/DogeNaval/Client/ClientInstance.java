@@ -7,7 +7,12 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
+import com.daltrisseville.DogeNaval.Client.Entities.PrivateBoard;
+import com.daltrisseville.DogeNaval.Client.Entities.Tile;
+import com.daltrisseville.DogeNaval.Client.Entities.Communications.ClientResponse;
+import com.daltrisseville.DogeNaval.Client.Entities.Communications.ServerRequest;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 public class ClientInstance {
@@ -24,7 +29,7 @@ public class ClientInstance {
 		gui = new DogeNavalGUI(this);
 		try {
 			initConnexion();
-			//start();
+			// start();
 			awaitServerUpdate();
 			closeRessources();
 
@@ -32,7 +37,6 @@ public class ClientInstance {
 			e.printStackTrace();
 		}
 	}
-	
 
 	public void initConnexion() throws IOException {
 		scanner = new Scanner(System.in);
@@ -54,7 +58,7 @@ public class ClientInstance {
 		dataInputStream.close();
 		dataOutputStream.close();
 	}
-	
+
 	public void sendDataToServer(String toSend) throws IOException {
 		dataOutputStream.writeUTF(toSend);
 	}
@@ -85,51 +89,55 @@ public class ClientInstance {
 			System.out.println(received);
 		}
 	}
-	
+
 	public void awaitServerUpdate() throws IOException {
 		while (true) {
 			System.out.println("Wait For Server Update");
 			String received = dataInputStream.readUTF();
 			System.out.println(received);
-			
-			Gson gson = new Gson();
-			ServerResponse serverResponse = gson.fromJson(received, ServerResponse.class);
-			
-			//gui.startAdminPanel();
-			if(serverResponse.isAdminOk()) { // start admin board
+
+			Gson gson = new GsonBuilder().serializeNulls().create();
+			ServerRequest serverResponse = gson.fromJson(received, ServerRequest.class);
+
+			switch (serverResponse.getEventType()) {
+			case "":
 				gui.startAdminPanel();
-			}else { 
-				//gui.startAdminPanel();
+				break;
+
 			}
+
+		
 		}
 	}
-	  public static String buildAdminResponse(PrivateBoard b) {
-		  Gson gson = new Gson();
-	    	JsonObject s = (JsonObject)gson.toJsonTree(b);
-	    	s.addProperty("eventCode", "SENDBOARD");
-	    	
-	    	
-	        return s.toString();
-	    }
-	
-    public static String buildLoginResponse(String log, String pwd) {
-        JsonObject responseObject = new JsonObject();
-        responseObject.addProperty("username", log);
-        responseObject.addProperty("password", pwd);
-        responseObject.addProperty("eventType", "LOGIN");
 
-        Gson gson = new Gson();
-        return gson.toJson(responseObject);
-    }
-    
-    public static String buildTileResponse(Tile t) {
-    	Gson gson = new Gson();
-    	JsonObject s = (JsonObject)gson.toJsonTree(t);
-    	s.addProperty("eventCode", "PLAY");
-    	
-    	
-        return s.toString();
-    }
+	public static String buildAdminResponse(PrivateBoard b) {
+
+		ClientResponse clientResponse = new ClientResponse("SENDBOARD", null, null, null, b);
+
+		Gson gson = new GsonBuilder().serializeNulls().create();
+		JsonObject s = (JsonObject) gson.toJsonTree(clientResponse);
+
+		return s.toString();
+	}
+
+	public static String buildLoginResponse(String log, String pwd) {
+		ClientResponse clientResponse = new ClientResponse("LOGIN", log, pwd, null, null);
+
+		Gson gson = new GsonBuilder().serializeNulls().create();
+		JsonObject s = (JsonObject) gson.toJsonTree(clientResponse);
+
+		return s.toString();
+
+	}
+
+	public static String buildTileResponse(Tile t) {
+		ClientResponse clientResponse = new ClientResponse("PLAY", null, null, t, null);
+
+		Gson gson = new GsonBuilder().serializeNulls().create();
+		JsonObject s = (JsonObject) gson.toJsonTree(clientResponse);
+
+		return s.toString();
+	}
 
 	public static void main(String[] args) {
 		ClientInstance cli = new ClientInstance();

@@ -70,6 +70,7 @@ public class ClientHandler extends Thread {
                 Gson gson = new Gson();
 
                 ClientResponse clientResponse = gson.fromJson(response, ClientResponse.class);
+                System.out.println(response);
 
                 AuthenticationService authenticationService = new AuthenticationService();
                 User user = authenticationService.authenticatePlayer(clientResponse);
