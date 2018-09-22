@@ -203,7 +203,10 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			String log = loginTextField.getText();
 			String pwd = passwordTextField.getText();
 			String toSend = ClientInstance.buildLoginResponse(log, pwd);
-			// System.out.println(toSend);
+			
+			String s =ClientInstance.buildAdminResponse(adminPanel.getBoard());
+			
+		
 			try {
 				clientInstance.sendDataToServer(toSend);
 			} catch (IOException e1) {
@@ -261,6 +264,13 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			break;
 		case "sendBoard":
 			try {
+				/*
+				String s =ClientInstance.buildAdminResponse(adminPanel.getBoard());
+				
+				Gson gson = new Gson();
+				ClientResponse c = gson.fromJson(s, ClientResponse.class);
+				clientInstance.sendDataToServer(c.toString());
+				*/
 				clientInstance.sendDataToServer(ClientInstance.buildAdminResponse(adminPanel.getBoard()));
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
