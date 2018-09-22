@@ -84,9 +84,6 @@ public class ClientInstance {
 			String received = dataInputStream.readUTF();
 			System.out.println(received);
 		}
-		
-		
-
 	}
 	
 	public void awaitServerUpdate() throws IOException {
@@ -119,7 +116,7 @@ public class ClientInstance {
         JsonObject responseObject = new JsonObject();
         responseObject.addProperty("username", log);
         responseObject.addProperty("password", pwd);
-        responseObject.addProperty("eventCode", "LOGIN");
+        responseObject.addProperty("eventType", "LOGIN");
 
         Gson gson = new Gson();
         return gson.toJson(responseObject);
