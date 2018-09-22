@@ -98,6 +98,7 @@ public class ClientInstance {
 			Gson gson = new Gson();
 			ServerResponse serverResponse = gson.fromJson(received, ServerResponse.class);
 			
+			//gui.startAdminPanel();
 			if(serverResponse.isAdminOk()) { // start admin board
 				gui.startAdminPanel();
 			}else { 
@@ -105,6 +106,14 @@ public class ClientInstance {
 			}
 		}
 	}
+	  public static String buildAdminResponse(PrivateBoard b) {
+		  Gson gson = new Gson();
+	    	JsonObject s = (JsonObject)gson.toJsonTree(b);
+	    	s.addProperty("eventCode", "SENDBOARD");
+	    	
+	    	
+	        return s.toString();
+	    }
 	
     public static String buildLoginResponse(String log, String pwd) {
         JsonObject responseObject = new JsonObject();

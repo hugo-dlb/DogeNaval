@@ -1,10 +1,9 @@
-package com.daltrisseville.DogeNaval.Server.Entities;
+package com.daltrisseville.DogeNaval.Client;
 
 import java.util.ArrayList;
 //import java.util.Arrays;
 //import java.util.stream.Collectors;
 
-import com.daltrisseville.DogeNaval.Server.Entities.Tile;
 
 public class BoardVerifier {
 

@@ -18,10 +18,37 @@ public class AdminBoardPanel extends JPanel {
 	private final Color myGray = new Color(57, 49, 49);// 121, 134, 134);
 	private final Color myBlue = new Color(3, 201, 169);
 	private final Color myWhite = new Color(236, 240, 241);
+	
+	private DogDirection actualDirection;
+	private int toPlaceDog;
+	private boolean allPlaced;
 
 	public AdminBoardPanel(PrivateBoard b) {
 		this.board = b;
 		this.selectedTile = null;
+		this.actualDirection=DogDirection.Horizontal;
+		this.toPlaceDog=0;
+		this.allPlaced=false;
+	}
+
+	public int getToPlaceDog() {
+		return toPlaceDog;
+	}
+
+	public void setToPlaceDog(int toPlaceDog) {
+		this.toPlaceDog = toPlaceDog;
+	}
+	
+	public boolean isAllPlaced() {
+		return this.board.getExpectedDogList().size()==this.toPlaceDog?true:false;
+	}
+
+	public DogDirection getActualDirection() {
+		return actualDirection;
+	}
+
+	public void setActualDirection(DogDirection actualDirection) {
+		this.actualDirection = actualDirection;
 	}
 
 	public int getBoardSize() {
@@ -63,7 +90,7 @@ public class AdminBoardPanel extends JPanel {
 		return new Dimension(this.getBounds().width, getHeight());
 	}
 
-	public GenericBoard getBoard() {
+	public PrivateBoard getBoard() {
 		return board;
 	}
 

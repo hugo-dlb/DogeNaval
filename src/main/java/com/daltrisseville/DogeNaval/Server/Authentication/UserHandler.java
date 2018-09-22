@@ -35,7 +35,7 @@ public class UserHandler {
     public User createUser(String username, String password, String level) {
         User user = new User(username, password, level);
         this.usersList.add(user);
-        this.saveUsersList();
+        //this.saveUsersList();
         return user;
     }
 
