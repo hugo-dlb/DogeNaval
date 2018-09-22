@@ -7,6 +7,10 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
+import com.daltrisseville.DogeNaval.Client.Entities.PrivateBoard;
+import com.daltrisseville.DogeNaval.Client.Entities.Tile;
+import com.daltrisseville.DogeNaval.Client.Entities.Communications.ClientResponse;
+import com.daltrisseville.DogeNaval.Client.Entities.Communications.ServerRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -93,20 +97,16 @@ public class ClientInstance {
 			System.out.println(received);
 
 			Gson gson = new GsonBuilder().serializeNulls().create();
-			ServerResponse serverResponse = gson.fromJson(received, ServerResponse.class);
+			ServerRequest serverResponse = gson.fromJson(received, ServerRequest.class);
 
 			switch (serverResponse.getEventType()) {
 			case "":
+				gui.startAdminPanel();
 				break;
 
 			}
 
-			// gui.startAdminPanel();
-			if (serverResponse.isAdminOk()) { // start admin board
-				gui.startAdminPanel();
-			} else {
-				// gui.startAdminPanel();
-			}
+		
 		}
 	}
 

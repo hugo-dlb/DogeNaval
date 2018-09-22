@@ -17,6 +17,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.daltrisseville.DogeNaval.Client.Entities.BoardVerifier;
+import com.daltrisseville.DogeNaval.Client.Entities.Dog;
+import com.daltrisseville.DogeNaval.Client.Entities.DogDirection;
+import com.daltrisseville.DogeNaval.Client.Entities.GenericBoard;
+import com.daltrisseville.DogeNaval.Client.Entities.PrivateBoard;
+import com.daltrisseville.DogeNaval.Client.Entities.Tile;
+import com.daltrisseville.DogeNaval.Client.Entities.TileType;
+
 public class DogeNavalGUI implements MouseListener, ActionListener {
 	private final Color myGreen = new Color(63, 182, 63); // 51, 204, 51);
 	private final Color myRed = new Color(255, 76, 76);// 255, 51, 0);

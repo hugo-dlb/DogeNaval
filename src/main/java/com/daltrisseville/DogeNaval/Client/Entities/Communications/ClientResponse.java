@@ -1,4 +1,7 @@
-package com.daltrisseville.DogeNaval.Client;
+package com.daltrisseville.DogeNaval.Client.Entities.Communications;
+
+import com.daltrisseville.DogeNaval.Client.Entities.PrivateBoard;
+import com.daltrisseville.DogeNaval.Client.Entities.Tile;
 
 public class ClientResponse {
 	private String eventType;

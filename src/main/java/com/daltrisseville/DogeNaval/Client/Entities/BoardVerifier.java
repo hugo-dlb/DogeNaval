@@ -1,4 +1,4 @@
-package com.daltrisseville.DogeNaval.Client;
+package com.daltrisseville.DogeNaval.Client.Entities;
 
 import java.util.ArrayList;
 //import java.util.Arrays;

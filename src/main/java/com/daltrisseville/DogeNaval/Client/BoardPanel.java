@@ -8,6 +8,9 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
 
+import com.daltrisseville.DogeNaval.Client.Entities.GenericBoard;
+import com.daltrisseville.DogeNaval.Client.Entities.Tile;
+
 public class BoardPanel extends JPanel {
 	private GenericBoard board;
 	private Tile selectedTile;
