@@ -82,23 +82,7 @@ public class ClientHandler extends Thread {
                         this.serverInstance.getGameEngine().addPlayer(this.uuid, player);
                         this.clientIsAuthenticated = true;
                     } catch (Exception exception) {
-                        ServerRequest gameStateServerResponse;
-
-                        Player[] players = this.serverInstance.getGameEngine().getPlayers();
-
-                        gameStateServerResponse = new ServerRequest(
-                                null,
-                                false,
-                                false,
-                                -1,
-                                null,
-                                players,
-                                -1,
-                                true
-                        );
-
-                        String gameStateJSON = gson.toJson(gameStateServerResponse);
-                        this.emitData(gameStateJSON);
+                        // do nothing
                     }
                 }
             } catch (Exception exception) {
@@ -141,7 +125,7 @@ public class ClientHandler extends Thread {
     }
 
     private String buildLoginRequest() {
-        ServerRequest serverRequest = new ServerRequest("LOGIN_REQUEST", false, false, -1, null, null, -1, this.serverInstance.getGameEngine().isGameFull());
+        ServerRequest serverRequest = new ServerRequest("LOGIN_REQUEST", false, false, -1, null, this.serverInstance.getGameEngine().getPlayers(), -1, this.serverInstance.getGameEngine().isGameFull());
 
         Gson gson = new GsonBuilder().serializeNulls().create();
 

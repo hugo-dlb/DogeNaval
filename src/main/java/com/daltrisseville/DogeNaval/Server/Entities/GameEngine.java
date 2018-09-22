@@ -109,7 +109,7 @@ public class GameEngine {
 		ServerRequest gameStateServerResponse;
 
 		gameStateServerResponse = new ServerRequest(
-				null,
+				"GAME_STATE",
 				false,
 				false,
 				-1,

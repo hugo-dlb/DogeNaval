@@ -25,7 +25,7 @@ public class ServerInstance {
     private void start(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(SERVER_PORT);
 
-        int maximumPlayers = 4;
+        int maximumPlayers = 2;
         if (args.length > 0) {
             maximumPlayers = Integer.parseInt(args[0]);
         }
