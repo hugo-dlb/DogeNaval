@@ -1,25 +1,21 @@
 package com.daltrisseville.DogeNaval.Server;
 
 import com.daltrisseville.DogeNaval.Server.Authentication.AuthenticationService;
-import com.daltrisseville.DogeNaval.Server.Authentication.User;
-import com.daltrisseville.DogeNaval.Server.Authentication.UserHandler;
-import com.daltrisseville.DogeNaval.Server.Entities.ClientLoginEvent;
-import com.daltrisseville.DogeNaval.Server.Entities.ClientResponse;
-import com.daltrisseville.DogeNaval.Server.Entities.ServerResponse;
+import com.daltrisseville.DogeNaval.Server.Entities.Communications.ClientResponse;
+import com.daltrisseville.DogeNaval.Server.Entities.Communications.ServerRequest;
 import com.daltrisseville.DogeNaval.Server.Entities.Player;
+import com.daltrisseville.DogeNaval.Server.Entities.User;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketException;
 
-class ClientHandler extends Thread {
+public class ClientHandler extends Thread {
 
-    private final ServerInstance parentServer;
+    private final ServerInstance serverInstance;
     private final String uuid;
     private final DataInputStream dataInputStream;
     private final DataOutputStream dataOutputStream;
@@ -27,8 +23,8 @@ class ClientHandler extends Thread {
     private boolean clientIsConnected = true;
     private boolean clientIsAuthenticated = false;
 
-    public ClientHandler(ServerInstance parentServer, String uuid, Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
-        this.parentServer = parentServer;
+    public ClientHandler(ServerInstance serverInstance, String uuid, Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
+        this.serverInstance = serverInstance;
         this.uuid = uuid;
         this.socket = socket;
         this.dataInputStream = dataInputStream;
@@ -46,12 +42,10 @@ class ClientHandler extends Thread {
                 } else {
                     this.startMainLoop();
                 }
-            } catch (SocketException socketException) {
-                System.out.println("socketException");
-                this.clientIsConnected = false;
             } catch (Exception exception) {
                 System.out.println(exception.getMessage());
                 exception.printStackTrace();
+                this.clientIsConnected = false;
             }
         }
 
@@ -59,7 +53,7 @@ class ClientHandler extends Thread {
             this.socket.close();
             this.dataInputStream.close();
             this.dataOutputStream.close();
-            this.parentServer.removeClient(uuid);
+            this.serverInstance.removeClient(uuid);
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -76,35 +70,45 @@ class ClientHandler extends Thread {
 
     private void requestAuthentication() {
         while (this.clientIsConnected && !this.clientIsAuthenticated) {
-            String loginRequestJSON = this.buildResponse(true, "LOGIN_REQUEST");
             try {
-                this.dataOutputStream.writeUTF(loginRequestJSON);
+                String loginRequestJSON = this.buildResponse(true, "LOGIN_REQUEST");
+                this.emitData(loginRequestJSON);
                 String response = this.dataInputStream.readUTF();
-                System.out.println(response);
 
-                try {
-                    Gson gson = new Gson();
+                Gson gson = new Gson();
+
+                ClientResponse loginEventClientRequest = gson.fromJson(response, ClientResponse.class);
+
+                AuthenticationService authenticationService = new AuthenticationService();
+                User user = authenticationService.authenticatePlayer(loginEventClientRequest);
+
+                if (user != null) {
+                    Player player = new Player(user, 0, true);
 
                     try {
-                        ClientLoginEvent clientLoginEvent = gson.fromJson(response, ClientLoginEvent.class);
-
-                        AuthenticationService authenticationService = new AuthenticationService();
-                        boolean loggedIn = authenticationService.authenticatePlayer(clientLoginEvent);
-
-                        if (loggedIn) {
-                            this.clientIsAuthenticated = true;
-                        }
+                        this.serverInstance.getGameEngine().addPlayer(this.uuid, player);
+                        this.clientIsAuthenticated = true;
                     } catch (Exception exception) {
-                        // do nothing
-                        System.out.println(exception.getMessage());
-                        exception.printStackTrace();
+                        ServerRequest gameStateServerResponse;
+
+                        Player[] players = this.serverInstance.getGameEngine().getPlayers();
+
+                        gameStateServerResponse = new ServerRequest(
+                                null,
+                                false,
+                                false,
+                                -1,
+                                null,
+                                players,
+                                -1,
+                                true
+                        );
+
+                        String gameStateJSON = gson.toJson(gameStateServerResponse);
+                        this.emitData(gameStateJSON);
                     }
-                } catch (Exception exception) {
-                    // do nothing
-                    System.out.println(exception.getMessage());
-                    exception.printStackTrace();
                 }
-            } catch (IOException exception) {
+            } catch (Exception exception) {
                 System.out.println(exception.getMessage());
                 exception.printStackTrace();
                 this.clientIsConnected = false;
@@ -112,30 +116,34 @@ class ClientHandler extends Thread {
         }
     }
 
-    private void startMainLoop() throws Exception {
-        while (this.clientIsConnected && this.clientIsAuthenticated) {
-            Gson gson = new GsonBuilder().serializeNulls().create();
+    private void startMainLoop() {
+        while (this.clientIsConnected && !this.clientIsAuthenticated) {
+            try {
+                this.serverInstance.getGameEngine().broadcastGameState();
+                String response = this.dataInputStream.readUTF();
 
-            UserHandler userHandler = new UserHandler();
-            User hugo = userHandler.createUser("hugo", "toto");
-            User arthur = userHandler.createUser("arthur", "toto");
-            Player p1 = new Player(hugo, 0, true);
-            Player p2 = new Player(arthur, 0, true);
-            Player[] players = {p1, p2};
-            boolean adminOk=true;
-            ServerResponse responseObject = new ServerResponse(true, null, true, false, false, -1, null, players, adminOk);
+                Gson gson = new Gson();
 
-            String responseJSON = gson.toJson(responseObject);
-            this.dataOutputStream.writeUTF(responseJSON);
+                ClientResponse clientResponse = gson.fromJson(response, ClientResponse.class);
 
-            String response = this.dataInputStream.readUTF();
-            System.out.println(response);
-
-            if (response.equals("...")) {
-                // ...
-            } else {
-                // ...
+                switch (clientResponse.getEventType()) {
+                    case "todo":
+                        // do something
+                }
+            } catch (Exception exception) {
+                try {
+                    this.serverInstance.getGameEngine().removePlayer(this.uuid);
+                } catch (Exception nestedException) {
+                    // do nothing
+                }
+                System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                this.clientIsConnected = false;
             }
         }
+    }
+
+    public void emitData(String data) throws Exception {
+        this.dataOutputStream.writeUTF(data);
     }
 }

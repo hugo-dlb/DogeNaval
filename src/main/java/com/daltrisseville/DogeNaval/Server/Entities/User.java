@@ -1,4 +1,4 @@
-package com.daltrisseville.DogeNaval.Server.Authentication;
+package com.daltrisseville.DogeNaval.Server.Entities;
 
 public class User {
 
@@ -6,12 +6,14 @@ public class User {
     private int id;
     private String username;
     private String password;
+    private String level;
 
-    public User(String newUsername, String newPassword) {
-        username = newUsername;
-        password = newPassword;
+    public User(String username, String password, String level) {
         maxId++;
-        id = maxId;
+        this.username = username;
+        this.password = password;
+        this.id = maxId;
+        this.level = level;
     }
 
     public static int getMaxId() {
@@ -34,6 +36,10 @@ public class User {
         maxId = newMaxId;
     }
 
+    public String getLevel() {
+        return this.level;
+    }
+
     public void setId(int newId) {
         this.id = newId;
     }
@@ -44,5 +50,9 @@ public class User {
 
     public void setPassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
     }
 }
