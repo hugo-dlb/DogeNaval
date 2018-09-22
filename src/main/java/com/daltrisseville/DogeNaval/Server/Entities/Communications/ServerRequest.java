@@ -1,47 +1,29 @@
-package com.daltrisseville.DogeNaval.Server.Entities;
+package com.daltrisseville.DogeNaval.Server.Entities.Communications;
 
-public class ServerResponse {
+import com.daltrisseville.DogeNaval.Server.Entities.GenericBoard;
+import com.daltrisseville.DogeNaval.Server.Entities.Player;
 
-	private boolean success;
-	private String errorCode;
-	private String eventType = "GAME_STATE_DATA";
-	private boolean connected;
+public class ServerRequest {
+
+	private String eventType;
 	private boolean gameStarted;
 	private boolean gameFinished;
 	private int currentPlayerId;
+	private GenericBoard publicBoard;
+	private Player[] players;
+	private int playerId;
+	private boolean gameFull;
 
-	private GenericBoard publicBoard = null;
-	private Player[] players = null;
-	private boolean adminOk;
-
-	public ServerResponse(boolean success, String errorCode, boolean connected, boolean gameStarted,
-			boolean gameFinished, int currentPlayerId, GenericBoard publicBoard, Player[] players, boolean adminOk) {
-		this.success = success;
-		this.errorCode = errorCode;
-		this.connected = connected;
+	public ServerRequest(String eventType, boolean gameStarted,
+                         boolean gameFinished, int currentPlayerId, GenericBoard publicBoard, Player[] players, int playerId, boolean gameFull) {
+		this.eventType = eventType;
 		this.gameStarted = gameStarted;
 		this.gameFinished = gameFinished;
 		this.currentPlayerId = currentPlayerId;
 		this.publicBoard = publicBoard;
 		this.players = players;
-
-		this.adminOk = adminOk;
-	}
-
-	public boolean isSuccess() {
-		return success;
-	}
-
-	public void setSuccess(boolean success) {
-		this.success = success;
-	}
-
-	public String getErrorCode() {
-		return errorCode;
-	}
-
-	public void setErrorCode(String errorCode) {
-		this.errorCode = errorCode;
+		this.playerId = playerId;
+		this.gameFull = gameFull;
 	}
 
 	public String getEventType() {
@@ -50,14 +32,6 @@ public class ServerResponse {
 
 	public void setEventType(String eventType) {
 		this.eventType = eventType;
-	}
-
-	public boolean isConnected() {
-		return connected;
-	}
-
-	public void setConnected(boolean connected) {
-		this.connected = connected;
 	}
 
 	public boolean isGameStarted() {
@@ -98,14 +72,6 @@ public class ServerResponse {
 
 	public void setPlayers(Player[] players) {
 		this.players = players;
-	}
-
-	public boolean isAdminOk() {
-		return adminOk;
-	}
-
-	public void setAdminOk(boolean adminOk) {
-		this.adminOk = adminOk;
 	}
 
 }

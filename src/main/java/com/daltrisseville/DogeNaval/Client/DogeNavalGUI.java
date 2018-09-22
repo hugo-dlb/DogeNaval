@@ -17,10 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.daltrisseville.DogeNaval.Server.Entities.ClientLoginEvent;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 public class DogeNavalGUI implements MouseListener, ActionListener {
 	private final Color myGreen = new Color(63, 182, 63); // 51, 204, 51);
 	private final Color myRed = new Color(255, 76, 76);// 255, 51, 0);
@@ -243,10 +239,12 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			break;
 		// admin
 		case "validate":
-			if (!adminPanel.isAllPlaced()) {
-				adminPanel.getBoard().addDog(adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()),
-						adminPanel.getSelectedTile().getCol(), adminPanel.getSelectedTile().getRow(),
-						adminPanel.getActualDirection());
+			Dog newDog=new Dog(adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()),
+					adminPanel.getSelectedTile().getCol(), adminPanel.getSelectedTile().getRow(),
+					adminPanel.getActualDirection());
+			
+			if (!adminPanel.isAllPlaced()&&BoardVerifier.isValidDog(adminPanel.getBoard(), newDog)) {
+				adminPanel.getBoard().addDog(newDog);
 
 				adminPanel.setToPlaceDog(adminPanel.getToPlaceDog() + 1);
 			}

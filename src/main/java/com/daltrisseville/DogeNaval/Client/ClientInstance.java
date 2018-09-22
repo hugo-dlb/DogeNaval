@@ -84,7 +84,6 @@ public class ClientInstance {
 			String received = dataInputStream.readUTF();
 			System.out.println(received);
 		}
-
 	}
 
 	public void awaitServerUpdate() throws IOException {

@@ -1,9 +1,16 @@
 package com.daltrisseville.DogeNaval.Server.Entities;
 
+import com.daltrisseville.DogeNaval.Server.ClientHandler;
+import com.daltrisseville.DogeNaval.Server.Entities.Communications.ServerRequest;
+import com.daltrisseville.DogeNaval.Server.ServerInstance;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.LinkedHashMap;
 
 public class GameEngine {
 
+	private ServerInstance serverInstance;
 	private int maximumPlayers;
 	private boolean gameStarted = false;
 	private boolean gameFinished = false;
@@ -12,19 +19,24 @@ public class GameEngine {
 	private PrivateBoard privateBoard = null;
 	private LinkedHashMap<String, Player> players = new LinkedHashMap<>();
 
-	public GameEngine(int maximumPlayers) {
-		if (maximumPlayers < 1) {
-			this.maximumPlayers = 1;
+	public GameEngine(ServerInstance serverInstance, int maximumPlayers) {
+		if (maximumPlayers < 2) {
+			this.maximumPlayers = 2;
 		} else {
 			this.maximumPlayers = maximumPlayers;
 		}
 
+		this.serverInstance = serverInstance;
 		this.privateBoard = new PrivateBoard();
 	}
 
 	public void addPlayer(String playerThreadUUID, Player player) throws Exception {
-		if (this.players.size() < this.maximumPlayers) {
+		if (!isGameFull()) {
 			this.players.put(playerThreadUUID, player);
+
+			if (this.isGameFull()) {
+				this.gameStarted = true;
+			}
 		} else {
 			throw new Exception("Maximum number of players reached.");
 		}
@@ -32,13 +44,17 @@ public class GameEngine {
 
 	public void removePlayer(String playerThreadUUID) throws Exception {
 		if (this.players.containsKey(playerThreadUUID)) {
-			this.players.remove(playerThreadUUID);
+			if (this.gameStarted && !this.gameFinished) {
+				this.players.get(playerThreadUUID).setConnected(false);
+			} else if (!this.gameStarted) {
+				this.players.remove(playerThreadUUID);
+			}
 		} else {
 			throw new Exception("Player " + playerThreadUUID + " is not part of the game.");
 		}
 	}
 
-	public void start() {
+	public void doNextStep(ClientHandler clientHandler) {
 		this.gameStarted = true;
 
 		while (!this.gameFinished) {
@@ -53,9 +69,9 @@ public class GameEngine {
 
 					this.currentPlayerId = p.getId();
 
-					sendDataToEveryone(); // nnniie
+					this.broadcastGameState();
 
-					Tile selectedTile = waitForCurrentPlayerResponse(p); // niiee
+					Tile selectedTile = waitForCurrentPlayerResponse(p);
 
 					if (BoardVerifier.isValidTile(privateBoard, selectedTile)) {
 						if (BoardVerifier.isHit(privateBoard, selectedTile)) {
@@ -82,8 +98,6 @@ public class GameEngine {
 		}
 		
 		endGame();
-		// Player firstPlayer = new ArrayList<>(this.players.values()).get(0);
-		// this.currentPlayerId = firstPlayer.getId();
 	}
 
 	private Tile waitForCurrentPlayerResponse(Player p) {
@@ -91,11 +105,43 @@ public class GameEngine {
 		return new Tile(0, 0);
 	}
 
-	private void sendDataToEveryone() {
-		// todo
+	public void broadcastGameState() {
+		ServerRequest gameStateServerResponse;
+
+		gameStateServerResponse = new ServerRequest(
+				null,
+				false,
+				false,
+				-1,
+				null,
+				this.getPlayers(),
+				-1,
+				this.isGameFull()
+		);
+
+		Gson gson = new GsonBuilder().serializeNulls().create();
+
+		String gameStateJSON = gson.toJson(gameStateServerResponse);
+		this.serverInstance.broadcastData(gameStateJSON);
 	}
-	private void endGame(){
+
+	private void endGame() {
 		//todo
 	}
 
+	public Player[] getPlayers() {
+		Player[] players = new Player[this.players.size()];
+
+		int i = 0;
+		for (String key : this.players.keySet()) {
+			players[i] = this.players.get(key);
+			i++;
+		}
+
+		return players;
+	}
+
+	public boolean isGameFull() {
+		return this.players.size() >= this.maximumPlayers;
+	}
 }
