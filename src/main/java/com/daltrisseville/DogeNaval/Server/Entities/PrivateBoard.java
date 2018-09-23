@@ -3,44 +3,42 @@ package com.daltrisseville.DogeNaval.Server.Entities;
 import java.util.ArrayList;
 
 
-public class PrivateBoard extends GenericBoard{
+public class PrivateBoard extends GenericBoard {
 
-	// private int[] expectedDogList;
-	private ArrayList<Dog> dogs;
-	private ArrayList<Integer> expectedDogList;
+    // private int[] expectedDogList;
+    private ArrayList<Dog> dogs;
+    private ArrayList<Integer> expectedDogList;
 
-	private static Integer[] BOARD_DOG_LIST = { 3, 4, 5 };
-	
+    private static Integer[] BOARD_DOG_LIST = {3, 4, 5};
 
-	public PrivateBoard() {
-		// this.expectedDogList = BOARD_DOG_LIST;
-		this.expectedDogList = new ArrayList<Integer>();
-		for (int i : BOARD_DOG_LIST) {
-			expectedDogList.add(i);
-		}
-		this.dogs = new ArrayList<Dog>();
-		
-	}
 
-	public void addDog(int x, int y, int length, DogDirection d) {
-		Dog dog = new Dog(length, x, y, d);
-		dogs.add(dog);
-	}
+    public PrivateBoard() {
+        // this.expectedDogList = BOARD_DOG_LIST;
+        this.expectedDogList = new ArrayList<Integer>();
+        for (int i : BOARD_DOG_LIST) {
+            expectedDogList.add(i);
+        }
+        this.dogs = new ArrayList<Dog>();
 
-	public ArrayList<Integer> getExpectedDogList() {
-		return expectedDogList;
-	}
+    }
 
-	
+    public void addDog(int x, int y, int length, DogDirection d) {
+        Dog dog = new Dog(length, x, y, d);
+        dogs.add(dog);
+    }
 
-	public ArrayList<Dog> getDogs() {
-		return dogs;
-	}
+    public ArrayList<Integer> getExpectedDogList() {
+        return expectedDogList;
+    }
 
-	public void setDogs(ArrayList<Dog> dogs) {
-		this.dogs = dogs;
-	}
 
-	
+    public ArrayList<Dog> getDogs() {
+        return dogs;
+    }
+
+    public void setDogs(ArrayList<Dog> dogs) {
+        this.dogs = dogs;
+    }
+
 
 }

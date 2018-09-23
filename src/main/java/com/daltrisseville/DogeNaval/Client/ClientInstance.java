@@ -103,7 +103,7 @@ public class ClientInstance {
 
 	public static String buildAdminResponse(PrivateBoard b) {
 
-		ClientResponse clientResponse = new ClientResponse("SENDBOARD", null, null, null, b);
+		ClientResponse clientResponse = new ClientResponse("SEND_BOARD", null, null, null, b);
 
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		JsonObject s = (JsonObject) gson.toJsonTree(clientResponse);

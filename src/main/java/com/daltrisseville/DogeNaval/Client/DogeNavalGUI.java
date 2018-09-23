@@ -193,7 +193,6 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		labelInfo.setText(
 				"Place dog length " + adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()));
 		labelOrientation.setText("Horizontal");
-
 	}
 
 	public void switchPanel(String s) {
