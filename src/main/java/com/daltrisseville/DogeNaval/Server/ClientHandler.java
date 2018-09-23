@@ -98,6 +98,7 @@ public class ClientHandler extends Thread {
             try {
                 this.serverInstance.getGameEngine().broadcastGameState();
                 String response = this.dataInputStream.readUTF();
+                System.out.println(response);
 
                 Gson gson = new Gson();
 

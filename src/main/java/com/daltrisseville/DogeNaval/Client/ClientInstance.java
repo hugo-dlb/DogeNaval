@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
+import com.daltrisseville.DogeNaval.Client.Entities.GenericBoard;
 import com.daltrisseville.DogeNaval.Client.Entities.PrivateBoard;
 import com.daltrisseville.DogeNaval.Client.Entities.Tile;
 import com.daltrisseville.DogeNaval.Client.Entities.Communications.ClientResponse;
@@ -63,32 +64,7 @@ public class ClientInstance {
 		dataOutputStream.writeUTF(toSend);
 	}
 
-	public void start() throws IOException {
 
-		// read the first message sent by the server (LOGIN_REQUEST)
-		String connectionWelcomeMessage = dataInputStream.readUTF();
-		System.out.println(connectionWelcomeMessage);
-
-		// the following loop performs the exchange of
-		// information between client and client handler
-		while (true) {
-			String toSend = scanner.nextLine();
-			sendDataToServer(toSend);
-
-			// If client sends exit,close this connection
-			// and then break from the while loop
-			if (toSend.equals("Exit")) {
-				System.out.println("Closing this connection : " + s);
-				s.close();
-				System.out.println("Connection closed");
-				break;
-			}
-
-			// printing date or time as requested by client
-			String received = dataInputStream.readUTF();
-			System.out.println(received);
-		}
-	}
 
 	public void awaitServerUpdate() throws IOException {
 		while (true) {
@@ -100,10 +76,25 @@ public class ClientInstance {
 			ServerRequest serverResponse = gson.fromJson(received, ServerRequest.class);
 
 			switch (serverResponse.getEventType()) {
-			case "":
+			case "LOGIN_REQUEST":
+				
+				break;
+			case "ADMIN_ACCEPT":
 				gui.startAdminPanel();
 				break;
-
+			case "GAME_START":
+				gui.startGamePanel();
+				break;
+			case "GAME_STATE":
+				gui.startAdminPanel();
+				
+				//GenericBoard newBoard=serverResponse.getPublicBoard();
+				//gui.updatePlayerBoard(newBoard);
+				break;
+			case "ADMIN_GAME_STATE":
+				//PrivateBoard newBoard=serverResponse.getPrivateBoard();
+				//gui.updateAdminBoard(newBoard);
+				break;
 			}
 
 
@@ -137,6 +128,32 @@ public class ClientInstance {
 		JsonObject s = (JsonObject) gson.toJsonTree(clientResponse);
 
 		return s.toString();
+	}
+	public void start() throws IOException {
+
+		// read the first message sent by the server (LOGIN_REQUEST)
+		String connectionWelcomeMessage = dataInputStream.readUTF();
+		System.out.println(connectionWelcomeMessage);
+
+		// the following loop performs the exchange of
+		// information between client and client handler
+		while (true) {
+			String toSend = scanner.nextLine();
+			sendDataToServer(toSend);
+
+			// If client sends exit,close this connection
+			// and then break from the while loop
+			if (toSend.equals("Exit")) {
+				System.out.println("Closing this connection : " + s);
+				s.close();
+				System.out.println("Connection closed");
+				break;
+			}
+
+			// printing date or time as requested by client
+			String received = dataInputStream.readUTF();
+			System.out.println(received);
+		}
 	}
 
 	public static void main(String[] args) {

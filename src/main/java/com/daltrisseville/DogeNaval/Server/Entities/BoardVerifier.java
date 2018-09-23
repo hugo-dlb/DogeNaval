@@ -4,32 +4,7 @@ import java.util.ArrayList;
 //import java.util.Arrays;
 //import java.util.stream.Collectors;
 
-import com.daltrisseville.DogeNaval.Server.Entities.Tile;
-
 public class BoardVerifier {
-
-	public static boolean isValidDog(PrivateBoard b, Dog dog) { //to test
-		if (dog.getDirection() == DogDirection.Horizontal) {
-			for (int i = 0; i < dog.getLength(); i++) {
-				if (!(dog.getxStart() + i >= 0 && dog.getxStart() + i < b.getBoardSize() && dog.getyStart() >= 0
-						&& dog.getyStart() < b.getBoardSize())) {
-					return false;
-
-				}
-			}
-
-		} else if (dog.getDirection() == DogDirection.Vertical) {
-			for (int j = 0; j < dog.getLength(); j++) {
-				if (!(dog.getxStart() >= 0 && dog.getxStart() < b.getBoardSize() && dog.getyStart() + j >= 0
-						&& dog.getyStart() + j < b.getBoardSize())) {
-					return false;
-				}
-			}
-
-		}
-		return true;
-
-	}
 
 	public static boolean gameFinished(PrivateBoard b) {
 		for (Dog dog : b.getDogs()) {
@@ -78,6 +53,64 @@ public class BoardVerifier {
 			}
 		}
 		return false;
+	}
+
+	public static boolean isValidDog(PrivateBoard b, Dog newDog) {
+		ArrayList<Tile> occupiedTiles = new ArrayList<Tile>();
+
+		for (Dog dog : b.getDogs()) {
+
+			if (dog.getDirection() == DogDirection.Horizontal) {
+				for (int i = 0; i < dog.getLength(); i++) {
+					if (dog.getxStart() + i >= 0 && dog.getxStart() + i < b.getBoardSize() && dog.getyStart() >= 0
+							&& dog.getyStart() < b.getBoardSize()
+							&& !occupiedTiles.contains(b.getTiles()[dog.getxStart() + i][dog.getyStart()])) {
+						occupiedTiles.add(b.getTiles()[dog.getxStart() + i][dog.getyStart()]);
+					} else {
+						return false;
+					}
+				}
+
+			} else if (dog.getDirection() == DogDirection.Vertical) {
+				for (int j = 0; j < dog.getLength(); j++) {
+					if (dog.getxStart() >= 0 && dog.getxStart() < b.getBoardSize() && dog.getyStart() + j >= 0
+							&& dog.getyStart() + j < b.getBoardSize()
+							&& !occupiedTiles.contains(b.getTiles()[dog.getxStart()][dog.getyStart() + j])) {
+						occupiedTiles.add(b.getTiles()[dog.getxStart()][dog.getyStart() + j]);
+					} else {
+						return false;
+					}
+				}
+
+			}
+
+		}
+
+		if (newDog.getDirection() == DogDirection.Horizontal) {
+			for (int i = 0; i < newDog.getLength(); i++) {
+				if (newDog.getxStart() + i >= 0 && newDog.getxStart() + i < b.getBoardSize() && newDog.getyStart() >= 0
+						&& newDog.getyStart() < b.getBoardSize()
+						&& !occupiedTiles.contains(b.getTiles()[newDog.getxStart() + i][newDog.getyStart()])) {
+					occupiedTiles.add(b.getTiles()[newDog.getxStart() + i][newDog.getyStart()]);
+				} else {
+					return false;
+				}
+			}
+
+		} else if (newDog.getDirection() == DogDirection.Vertical) {
+			for (int j = 0; j < newDog.getLength(); j++) {
+				if (newDog.getxStart() >= 0 && newDog.getxStart() < b.getBoardSize() && newDog.getyStart() + j >= 0
+						&& newDog.getyStart() + j < b.getBoardSize()
+						&& !occupiedTiles.contains(b.getTiles()[newDog.getxStart()][newDog.getyStart() + j])) {
+					occupiedTiles.add(b.getTiles()[newDog.getxStart()][newDog.getyStart() + j]);
+				} else {
+					return false;
+				}
+			}
+
+		}
+		return true;
+
 	}
 
 	public static boolean verifyBoardInit(PrivateBoard b) {

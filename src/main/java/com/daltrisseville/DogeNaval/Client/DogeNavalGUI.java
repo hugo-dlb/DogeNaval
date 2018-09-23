@@ -14,6 +14,7 @@ import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -56,14 +57,15 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	JTextField loginTextField = new JTextField(10);
 	JTextField passwordTextField = new JTextField(10);
 	JButton buttonLogin = new JButton("login");
-	JButton buttonOne = new JButton("Switch to second panel/workspace");
+	JButton buttonOne = new JButton("Test player page");
 
 	// gamePage
-	JButton buttonSecond = new JButton("Switch to first panel/workspace");
-	JButton buttonTest = new JButton("Test");
+	JButton buttonSecond = new JButton("N/A");
+	JButton buttonTest = new JButton("Test Tile Update");
 	JButton buttonSendTile = new JButton("Attack!");
 
 	// adminPage
+	JLabel labelScores = new JLabel();
 	JLabel labelInfo = new JLabel();
 	JButton buttonValidate = new JButton("Validate");
 	JButton buttonOrientation = new JButton("Switch orientation");
@@ -80,8 +82,8 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 	public void initGUI() {
 
-		frame.setMinimumSize(new Dimension(400, 400));
-		frame.setSize(new Dimension(500, 770));
+		frame.setMinimumSize(new Dimension(500, 400));
+		frame.setSize(new Dimension(600, 600));
 
 		container.setLayout(cl);
 		secondPage.setLayout(new BorderLayout());
@@ -110,10 +112,11 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 		firstPage.setBackground(myGreen);
 		secondPage_top.setBackground(myGray);
-
+		
 		secondPage.add(secondPage_top, BorderLayout.NORTH);
 		secondPage.add(boardPanel, BorderLayout.CENTER);
 
+		adminPage.add(labelScores,BorderLayout.WEST);
 		adminPage.add(adminPage_top, BorderLayout.NORTH);
 		adminPage.add(adminPanel, BorderLayout.CENTER);
 
@@ -149,18 +152,28 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 		frame.add(container);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.pack();
+		//frame.pack();
 		frame.setVisible(true);
 
 		// test
-		updateBoard(new GenericBoard());
+		//updateBoard(new GenericBoard());
 
 	}
 
-	public void updateBoard(GenericBoard newBoard) {
+	public void updatePlayerBoard(GenericBoard newBoard) {
 		boardPanel.setBoard(newBoard);
 
 		boardPanel.updateUI();
+
+	}
+	public void updateAdminBoard(PrivateBoard newBoard) {
+		adminPanel.setBoard(newBoard);
+
+		adminPanel.updateUI();
+		
+		//String scores;
+		//for() players set text
+		
 
 	}
 
@@ -207,10 +220,9 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			String log = loginTextField.getText();
 			String pwd = passwordTextField.getText();
 			String toSend = ClientInstance.buildLoginResponse(log, pwd);
-			
-			String s =ClientInstance.buildAdminResponse(adminPanel.getBoard());
-			
-		
+
+			String s = ClientInstance.buildAdminResponse(adminPanel.getBoard());
+
 			try {
 				clientInstance.sendDataToServer(toSend);
 			} catch (IOException e1) {
@@ -230,7 +242,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			// Tests
 			boardPanel.getBoard().getTiles()[test][test].setTileType(TileType.Miss);
 			test++;
-			updateBoard(boardPanel.getBoard());
+			updatePlayerBoard(boardPanel.getBoard());
 			break;
 
 		case "attack":
@@ -247,20 +259,26 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			break;
 		// admin
 		case "validate":
-			Dog newDog=new Dog(adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()),
-					adminPanel.getSelectedTile().getCol(), adminPanel.getSelectedTile().getRow(),
-					adminPanel.getActualDirection());
-			
-			if (!adminPanel.isAllPlaced()&&BoardVerifier.isValidDog(adminPanel.getBoard(), newDog)) {
-				adminPanel.getBoard().addDog(newDog);
 
-				adminPanel.setToPlaceDog(adminPanel.getToPlaceDog() + 1);
+			if (!adminPanel.isAllPlaced()) {
+				Dog newDog = new Dog(adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()),
+						adminPanel.getSelectedTile().getCol(), adminPanel.getSelectedTile().getRow(),
+						adminPanel.getActualDirection());
+				if (BoardVerifier.isValidDog(adminPanel.getBoard(), newDog)) {
+					adminPanel.getBoard().addDog(newDog);
+
+					adminPanel.setToPlaceDog(adminPanel.getToPlaceDog() + 1);
+
+					adminPanel.updateUI();
+				} else {
+					JOptionPane.showMessageDialog(null, "Dog not valid", "Error", JOptionPane.ERROR_MESSAGE);
+				}
 			}
+
 			if (!adminPanel.isAllPlaced()) {
 				labelInfo.setText("Place dog length "
 						+ adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()));
 			} else {
-
 				labelInfo.setText("All dogs placed, please send");
 			}
 
@@ -270,14 +288,12 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			break;
 		case "sendBoard":
 			try {
-				/*
-				String s =ClientInstance.buildAdminResponse(adminPanel.getBoard());
-				
-				Gson gson = new Gson();
-				ClientResponse c = gson.fromJson(s, ClientResponse.class);
-				clientInstance.sendDataToServer(c.toString());
-				*/
-				clientInstance.sendDataToServer(ClientInstance.buildAdminResponse(adminPanel.getBoard()));
+				if (BoardVerifier.verifyBoardInit(adminPanel.getBoard())) {
+					clientInstance.sendDataToServer(ClientInstance.buildAdminResponse(adminPanel.getBoard()));
+				} else {
+					JOptionPane.showMessageDialog(null, "Board not valid", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

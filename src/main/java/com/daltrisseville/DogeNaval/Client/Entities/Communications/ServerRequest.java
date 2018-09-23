@@ -25,6 +25,22 @@ public class ServerRequest {
 		this.gameFull = gameFull;
 	}
 
+	public int getPlayerId() {
+		return playerId;
+	}
+
+	public void setPlayerId(int playerId) {
+		this.playerId = playerId;
+	}
+
+	public boolean isGameFull() {
+		return gameFull;
+	}
+
+	public void setGameFull(boolean gameFull) {
+		this.gameFull = gameFull;
+	}
+
 	public String getEventType() {
 		return eventType;
 	}
