@@ -7,7 +7,6 @@ import com.daltrisseville.DogeNaval.Server.Entities.Player;
 import com.daltrisseville.DogeNaval.Server.Entities.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -105,8 +104,14 @@ public class ClientHandler extends Thread {
                 ClientResponse clientResponse = gson.fromJson(response, ClientResponse.class);
 
                 switch (clientResponse.getEventType()) {
-                    case "todo":
-                        // do something
+                    case "SEND_BOARD":
+                        this.serverInstance.getGameEngine().initializeBoard(this, clientResponse);
+                        break;
+                    case "PLAY":
+                        this.serverInstance.getGameEngine().doNextStep(this, clientResponse);
+                        break;
+                    default:
+                        this.serverInstance.getGameEngine().doNextStep(this, clientResponse);
                 }
             } catch (Exception exception) {
                 try {
@@ -127,11 +132,15 @@ public class ClientHandler extends Thread {
 
     private String buildLoginRequest() {
         ServerRequest serverRequest = new ServerRequest("LOGIN_REQUEST", false, false,
-                -1, null, this.serverInstance.getGameEngine().getPlayersArray(),
+                -1, null, null, this.serverInstance.getGameEngine().getPlayersArray(),
                 -1, this.serverInstance.getGameEngine().isGameFull(), false);
 
         Gson gson = new GsonBuilder().serializeNulls().create();
 
         return gson.toJson(serverRequest);
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 }

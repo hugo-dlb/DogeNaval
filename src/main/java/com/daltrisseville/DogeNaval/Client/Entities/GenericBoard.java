@@ -20,11 +20,12 @@ public class GenericBoard {
 			}
 		}
 		
-		//for tests
+		/*for tests
 		this.tiles[0][0].setTileType(TileType.Hit);
 		this.tiles[1][2].setTileType(TileType.Miss);
 		this.tiles[2][2].setTileType(TileType.Miss);
 		this.tiles[4][9].setTileType(TileType.Hit);
+		*/
 	}
 	
 	public GenericBoard(GenericBoard b){

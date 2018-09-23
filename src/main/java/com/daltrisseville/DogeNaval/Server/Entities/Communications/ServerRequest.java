@@ -2,6 +2,7 @@ package com.daltrisseville.DogeNaval.Server.Entities.Communications;
 
 import com.daltrisseville.DogeNaval.Server.Entities.GenericBoard;
 import com.daltrisseville.DogeNaval.Server.Entities.Player;
+import com.daltrisseville.DogeNaval.Server.Entities.PrivateBoard;
 
 public class ServerRequest {
 
@@ -10,18 +11,21 @@ public class ServerRequest {
 	private boolean gameFinished;
 	private int currentPlayerId;
 	private GenericBoard publicBoard;
+	private PrivateBoard privateBoard;
 	private Player[] players;
 	private int playerId;
 	private boolean gameFull;
 	private boolean isAdmin;
 
-	public ServerRequest(String eventType, boolean gameStarted,
-                         boolean gameFinished, int currentPlayerId, GenericBoard publicBoard, Player[] players, int playerId, boolean gameFull, boolean isAdmin) {
+	public ServerRequest(String eventType, boolean gameStarted, boolean gameFinished, int currentPlayerId,
+			GenericBoard publicBoard, PrivateBoard privateBoard, Player[] players, int playerId, boolean gameFull,
+			boolean isAdmin) {
 		this.eventType = eventType;
 		this.gameStarted = gameStarted;
 		this.gameFinished = gameFinished;
 		this.currentPlayerId = currentPlayerId;
 		this.publicBoard = publicBoard;
+		this.privateBoard = privateBoard;
 		this.players = players;
 		this.playerId = playerId;
 		this.gameFull = gameFull;
@@ -32,48 +36,40 @@ public class ServerRequest {
 		return eventType;
 	}
 
-	public void setEventType(String eventType) {
-		this.eventType = eventType;
-	}
-
 	public boolean isGameStarted() {
 		return gameStarted;
-	}
-
-	public void setGameStarted(boolean gameStarted) {
-		this.gameStarted = gameStarted;
 	}
 
 	public boolean isGameFinished() {
 		return gameFinished;
 	}
 
-	public void setGameFinished(boolean gameFinished) {
-		this.gameFinished = gameFinished;
-	}
-
 	public int getCurrentPlayerId() {
 		return currentPlayerId;
-	}
-
-	public void setCurrentPlayerId(int currentPlayerId) {
-		this.currentPlayerId = currentPlayerId;
 	}
 
 	public GenericBoard getPublicBoard() {
 		return publicBoard;
 	}
 
-	public void setPublicBoard(GenericBoard publicBoard) {
-		this.publicBoard = publicBoard;
+	public PrivateBoard getPrivateBoard() {
+		return privateBoard;
 	}
 
 	public Player[] getPlayers() {
 		return players;
 	}
 
-	public void setPlayers(Player[] players) {
-		this.players = players;
+	public int getPlayerId() {
+		return playerId;
+	}
+
+	public boolean isGameFull() {
+		return gameFull;
+	}
+
+	public boolean isAdmin() {
+		return isAdmin;
 	}
 
 }
