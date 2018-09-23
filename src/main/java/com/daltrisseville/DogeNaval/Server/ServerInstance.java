@@ -1,6 +1,8 @@
 package com.daltrisseville.DogeNaval.Server;
 
-import com.daltrisseville.DogeNaval.Server.Entities.GameEngine;
+import com.daltrisseville.DogeNaval.Server.Entities.Communications.ServerRequest;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -15,7 +17,7 @@ public class ServerInstance {
     private final static int SERVER_PORT = 5056;
     private GameEngine gameEngine;
 
-    private HashMap<String,ClientHandler> clients = new HashMap<>();
+    private HashMap<String, ClientHandler> clients = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
         ServerInstance serverInstance = new ServerInstance();
@@ -72,10 +74,28 @@ public class ServerInstance {
         System.out.println("Client " + uuid + " disconnected.");
     }
 
-    public void broadcastData (String data) {
+    public void broadcastGameState() {
         for (String key : this.clients.keySet()) {
             try {
-                this.clients.get(key).emitData(data);
+                ServerRequest gameStateServerResponse;
+
+                gameStateServerResponse = new ServerRequest(
+                        "GAME_STATE",
+                        false,
+                        false,
+                        -1,
+                        null,
+                        this.getGameEngine().getPlayersArray(),
+                        this.gameEngine.getPlayers().get(key).getId(),
+                        this.getGameEngine().isGameFull(),
+                        this.gameEngine.getPlayers().get(key).getLevel().equals("ADMIN")
+                );
+
+                Gson gson = new GsonBuilder().serializeNulls().create();
+
+                String gameStateJSON = gson.toJson(gameStateServerResponse);
+
+                this.clients.get(key).emitData(gameStateJSON);
             } catch (Exception exception) {
                 // do nothing
             }

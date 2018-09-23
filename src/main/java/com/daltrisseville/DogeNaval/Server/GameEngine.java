@@ -1,8 +1,7 @@
-package com.daltrisseville.DogeNaval.Server.Entities;
+package com.daltrisseville.DogeNaval.Server;
 
-import com.daltrisseville.DogeNaval.Server.ClientHandler;
+import com.daltrisseville.DogeNaval.Server.Entities.*;
 import com.daltrisseville.DogeNaval.Server.Entities.Communications.ServerRequest;
-import com.daltrisseville.DogeNaval.Server.ServerInstance;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -106,30 +105,18 @@ public class GameEngine {
 	}
 
 	public void broadcastGameState() {
-		ServerRequest gameStateServerResponse;
-
-		gameStateServerResponse = new ServerRequest(
-				"GAME_STATE",
-				false,
-				false,
-				-1,
-				null,
-				this.getPlayers(),
-				-1,
-				this.isGameFull()
-		);
-
-		Gson gson = new GsonBuilder().serializeNulls().create();
-
-		String gameStateJSON = gson.toJson(gameStateServerResponse);
-		this.serverInstance.broadcastData(gameStateJSON);
+		this.serverInstance.broadcastGameState();
 	}
 
 	private void endGame() {
 		//todo
 	}
 
-	public Player[] getPlayers() {
+	public LinkedHashMap<String, Player> getPlayers() {
+		return this.players;
+	}
+
+	public Player[] getPlayersArray() {
 		Player[] players = new Player[this.players.size()];
 
 		int i = 0;

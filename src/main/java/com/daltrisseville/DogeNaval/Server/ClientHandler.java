@@ -126,7 +126,9 @@ public class ClientHandler extends Thread {
     }
 
     private String buildLoginRequest() {
-        ServerRequest serverRequest = new ServerRequest("LOGIN_REQUEST", false, false, -1, null, this.serverInstance.getGameEngine().getPlayers(), -1, this.serverInstance.getGameEngine().isGameFull());
+        ServerRequest serverRequest = new ServerRequest("LOGIN_REQUEST", false, false,
+                -1, null, this.serverInstance.getGameEngine().getPlayersArray(),
+                -1, this.serverInstance.getGameEngine().isGameFull(), false);
 
         Gson gson = new GsonBuilder().serializeNulls().create();
 

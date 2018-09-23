@@ -13,9 +13,10 @@ public class ServerRequest {
 	private Player[] players;
 	private int playerId;
 	private boolean gameFull;
+	private boolean isAdmin;
 
 	public ServerRequest(String eventType, boolean gameStarted,
-                         boolean gameFinished, int currentPlayerId, GenericBoard publicBoard, Player[] players, int playerId, boolean gameFull) {
+                         boolean gameFinished, int currentPlayerId, GenericBoard publicBoard, Player[] players, int playerId, boolean gameFull, boolean isAdmin) {
 		this.eventType = eventType;
 		this.gameStarted = gameStarted;
 		this.gameFinished = gameFinished;
@@ -24,6 +25,7 @@ public class ServerRequest {
 		this.players = players;
 		this.playerId = playerId;
 		this.gameFull = gameFull;
+		this.isAdmin = isAdmin;
 	}
 
 	public String getEventType() {

@@ -19,6 +19,10 @@ public class Player {
     public int getId() {
         return this.user.getId();
     }
+
+    public String getLevel() {
+        return this.user.getLevel();
+    }
     
     public void upScore(){
     	this.score++;
