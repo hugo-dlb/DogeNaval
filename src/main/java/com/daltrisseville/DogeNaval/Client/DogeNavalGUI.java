@@ -44,11 +44,13 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 	JFrame frame = new JFrame("DogeNavalClient");
 	JPanel container = new JPanel();
-	JPanel firstPage = new JPanel();
-	JPanel secondPage = new JPanel();
+	
+	JPanel loginPage = new JPanel();
+	JPanel waitPage = new JPanel();
+	JPanel playerPage = new JPanel();
 	JPanel adminPage = new JPanel();
 
-	JPanel secondPage_top = new JPanel();
+	JPanel playerPage_top = new JPanel();
 	JPanel adminPage_top = new JPanel();
 	BoardPanel boardPanel;
 	AdminBoardPanel adminPanel;
@@ -58,6 +60,9 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	JTextField passwordTextField = new JTextField(10);
 	JButton buttonLogin = new JButton("login");
 	JButton buttonOne = new JButton("Test player page");
+	
+	// WaitPage
+	JLabel labelWait=new JLabel("");
 
 	// gamePage
 	JButton buttonSecond = new JButton("N/A");
@@ -86,7 +91,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		frame.setSize(new Dimension(600, 600));
 
 		container.setLayout(cl);
-		secondPage.setLayout(new BorderLayout());
+		playerPage.setLayout(new BorderLayout());
 		adminPage.setLayout(new BorderLayout());
 
 		board = new GenericBoard();
@@ -95,14 +100,16 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		adminBoard = new PrivateBoard();
 		adminPanel = new AdminBoardPanel(adminBoard);
 
-		firstPage.add(loginTextField);
-		firstPage.add(passwordTextField);
-		firstPage.add(buttonLogin);
-		firstPage.add(buttonOne);
+		loginPage.add(loginTextField);
+		loginPage.add(passwordTextField);
+		loginPage.add(buttonLogin);
+		loginPage.add(buttonOne);
+		
+		waitPage.add(labelWait);
 
-		secondPage_top.add(buttonSecond);
-		secondPage_top.add(buttonTest);
-		secondPage_top.add(buttonSendTile);
+		playerPage_top.add(buttonSecond);
+		playerPage_top.add(buttonTest);
+		playerPage_top.add(buttonSendTile);
 
 		adminPage_top.add(labelInfo);
 		adminPage_top.add(buttonValidate);
@@ -110,23 +117,24 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		adminPage_top.add(labelOrientation);
 		adminPage_top.add(buttonSendBoard);
 
-		firstPage.setBackground(myGreen);
-		secondPage_top.setBackground(myGray);
+		loginPage.setBackground(myGreen);
+		playerPage_top.setBackground(myGray);
+		waitPage.setBackground(myYellow);
 		
-		secondPage.add(secondPage_top, BorderLayout.NORTH);
-		secondPage.add(boardPanel, BorderLayout.CENTER);
+		playerPage.add(playerPage_top, BorderLayout.NORTH);
+		playerPage.add(boardPanel, BorderLayout.CENTER);
 
 		adminPage.add(labelScores,BorderLayout.WEST);
 		adminPage.add(adminPage_top, BorderLayout.NORTH);
 		adminPage.add(adminPanel, BorderLayout.CENTER);
 
-		container.add(firstPage, "1");
-		container.add(secondPage, "2");
+		container.add(loginPage, "loginPage");
+		container.add(waitPage, "waitPage");
+		container.add(playerPage, "playerPage");
 		container.add(adminPage, "adminPage");
 
-		switchPanel("firstPanel");
-
-		// boardPanel.addMouseListener(this);
+		switchPage("loginPage");
+		
 
 		buttonLogin.setActionCommand("login");
 		buttonOne.setActionCommand("1");
@@ -164,10 +172,10 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		boardPanel.setBoard(newBoard);
 
 		boardPanel.updateUI();
-
 	}
 	public void updateAdminBoard(PrivateBoard newBoard) {
 		adminPanel.setBoard(newBoard);
+		System.out.println("ee");
 
 		adminPanel.updateUI();
 		
@@ -179,7 +187,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 	public void startGamePanel() {
 
-		switchPanel("secondPanel");
+		switchPage("playerPage");
 		boardPanel.addMouseListener(this);
 		adminMode = false;
 
@@ -187,27 +195,18 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 	public void startAdminPanel() {
 
-		switchPanel("adminPanel");
+		switchPage("adminPage");
 		adminPanel.addMouseListener(this);
 		adminMode = true;
 		labelInfo.setText(
 				"Place dog length " + adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()));
 		labelOrientation.setText("Horizontal");
+
 	}
 
-	public void switchPanel(String s) {
+	public void switchPage(String s) {
+		cl.show(container, s);
 
-		switch (s) {
-		case "firstPanel":
-			cl.show(container, "1");
-			break;
-		case "secondPanel":
-			cl.show(container, "2");
-			break;
-		case "adminPanel":
-			cl.show(container, "adminPage");
-			break;
-		}
 	}
 
 	@Override
@@ -238,10 +237,11 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			// switchPanel("firstPanel");
 			break;
 		case "3":
-			// Tests
+			 //Tests
 			boardPanel.getBoard().getTiles()[test][test].setTileType(TileType.Miss);
 			test++;
 			updatePlayerBoard(boardPanel.getBoard());
+			
 			break;
 
 		case "attack":

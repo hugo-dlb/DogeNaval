@@ -7,6 +7,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
+import javax.swing.JOptionPane;
+
 import com.daltrisseville.DogeNaval.Client.Entities.GenericBoard;
 import com.daltrisseville.DogeNaval.Client.Entities.PrivateBoard;
 import com.daltrisseville.DogeNaval.Client.Entities.Tile;
@@ -24,11 +26,14 @@ public class ClientInstance {
 	DataOutputStream dataOutputStream;
 	boolean myTurn;
 
+	boolean launched;
+
 	DogeNavalGUI gui;
 
 	public ClientInstance() {
 		gui = new DogeNavalGUI(this);
 		try {
+			this.launched = false;
 			initConnexion();
 			// start();
 			awaitServerUpdate();
@@ -64,8 +69,6 @@ public class ClientInstance {
 		dataOutputStream.writeUTF(toSend);
 	}
 
-
-
 	public void awaitServerUpdate() throws IOException {
 		while (true) {
 			System.out.println("Wait For Server Update");
@@ -73,30 +76,49 @@ public class ClientInstance {
 			System.out.println(received);
 
 			Gson gson = new GsonBuilder().serializeNulls().create();
-			ServerRequest serverResponse = gson.fromJson(received, ServerRequest.class);
+			ServerRequest sr = gson.fromJson(received, ServerRequest.class);
 
-			switch (serverResponse.getEventType()) {
-			case "LOGIN_REQUEST":
-				
-				break;
-			case "ADMIN_ACCEPT":
-				gui.startAdminPanel();
-				break;
-			case "GAME_START":
-				gui.startGamePanel();
-				break;
-			case "GAME_STATE":
-				gui.startAdminPanel();
-				
-				//GenericBoard newBoard=serverResponse.getPublicBoard();
-				//gui.updatePlayerBoard(newBoard);
-				break;
-			case "ADMIN_GAME_STATE":
-				//PrivateBoard newBoard=serverResponse.getPrivateBoard();
-				//gui.updateAdminBoard(newBoard);
-				break;
-			}
+			if (sr.getEventType().equals("GAME_STATE")) {
+				if (sr.isAdmin()) {
+					if (!this.launched) {
+						gui.startAdminPanel();
+						this.launched = true;
+					} else {
+						PrivateBoard newBoard = sr.getPrivateBoard();
+						gui.updateAdminBoard(newBoard);
+					}
 
+				} else {// not admin
+
+					// in progress
+					if (!this.launched) {
+						gui.startGamePanel();
+						this.launched = true;
+					} else {
+						GenericBoard newBoard = sr.getPublicBoard();
+						gui.updatePlayerBoard(newBoard);
+					}
+
+				}
+
+			} else if (sr.getEventType().equals("LOGIN_REQUEST")) {
+
+				if (sr.isGameStarted()) {
+					JOptionPane.showMessageDialog(null, "Game full", "Error", JOptionPane.ERROR_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(null, "Wrong login/password", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			} /*
+				 * 
+				 * switch (sr.getEventType()) { case "LOGIN_REQUEST": break; case
+				 * "ADMIN_ACCEPT": gui.startAdminPanel(); break; case "GAME_START":
+				 * gui.startGamePanel(); break; case "GAME_STATE": gui.startAdminPanel();
+				 * 
+				 * // GenericBoard newBoard=serverResponse.getPublicBoard(); //
+				 * gui.updatePlayerBoard(newBoard); break; case "ADMIN_GAME_STATE": //
+				 * PrivateBoard newBoard=serverResponse.getPrivateBoard(); //
+				 * gui.updateAdminBoard(newBoard); break;
+				 */
 
 		}
 	}
@@ -129,31 +151,13 @@ public class ClientInstance {
 
 		return s.toString();
 	}
-	public void start() throws IOException {
 
-		// read the first message sent by the server (LOGIN_REQUEST)
-		String connectionWelcomeMessage = dataInputStream.readUTF();
-		System.out.println(connectionWelcomeMessage);
+	public boolean isLaunched() {
+		return launched;
+	}
 
-		// the following loop performs the exchange of
-		// information between client and client handler
-		while (true) {
-			String toSend = scanner.nextLine();
-			sendDataToServer(toSend);
-
-			// If client sends exit,close this connection
-			// and then break from the while loop
-			if (toSend.equals("Exit")) {
-				System.out.println("Closing this connection : " + s);
-				s.close();
-				System.out.println("Connection closed");
-				break;
-			}
-
-			// printing date or time as requested by client
-			String received = dataInputStream.readUTF();
-			System.out.println(received);
-		}
+	public void setLaunched(boolean launched) {
+		this.launched = launched;
 	}
 
 	public static void main(String[] args) {
