@@ -99,6 +99,8 @@ public class GameEngine {
 	public void initializeBoard(ClientHandler clientHandler, ClientResponse clientResponse) {
 		Player player = this.getPlayerFromClientHandler(clientHandler);
 
+		PrivateBoard privateBoard = clientResponse.getAdminBoard();
+
 		if (player.getLevel().equals("ADMIN") && BoardVerifier.verifyBoardInit(privateBoard)) {
 			this.privateBoard = clientResponse.getAdminBoard();
 			this.publicBoard = clientResponse.getAdminBoard();

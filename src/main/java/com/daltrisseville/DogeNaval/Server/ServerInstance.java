@@ -81,7 +81,7 @@ public class ServerInstance {
 				ServerRequest gameStateServerResponse;
 
 				gameStateServerResponse = new ServerRequest("GAME_STATE", false, false, -1,
-						!this.gameEngine.getPlayers().get(key).getLevel().equals("ADMIN")
+						this.gameEngine.getPlayers().get(key).getLevel().equals("USER")
 								? this.gameEngine.getPublicBoard()
 								: null,
 						this.gameEngine.getPlayers().get(key).getLevel().equals("ADMIN")
