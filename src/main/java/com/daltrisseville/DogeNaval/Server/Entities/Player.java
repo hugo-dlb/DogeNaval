@@ -23,9 +23,13 @@ public class Player {
     public String getLevel() {
         return this.user.getLevel();
     }
-    
-    public void upScore(){
-    	this.score++;
+
+    public void upScore() {
+        this.score++;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public void setConnected(boolean connected) {

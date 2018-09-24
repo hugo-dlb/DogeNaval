@@ -15,8 +15,8 @@ public class Player {
 	}
 
 	public String toString() {
-		return this.user.getUsername() + "(" + this.score + ") points, "
-				+ (this.connected ? "connected" : "disconnected") + ".";
+		return this.user.getUsername() + (this.user.getLevel().equals("USER") ? ("(" + this.score + ") points,") : ",")
+				+ (this.connected ? " connected" : "disconnected") + ".";
 	}
 
 	public int getId() { return this.user.getId(); }

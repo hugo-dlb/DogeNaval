@@ -3,186 +3,252 @@ package com.daltrisseville.DogeNaval.Server;
 import com.daltrisseville.DogeNaval.Server.Entities.*;
 import com.daltrisseville.DogeNaval.Server.Entities.Communications.ClientResponse;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class GameEngine {
 
-	private ServerInstance serverInstance;
-	private int maximumPlayers;
-	private boolean gameStarted = false;
-	private boolean gameFinished = false;
-	private int currentPlayerId = -1;
+    private ServerInstance serverInstance;
+    private int maximumPlayers;
+    private boolean gameStarted = false;
+    private boolean gameFinished = false;
+    private boolean adminInitializedBoard = false;
+    private int currentPlayerId = -1;
 
-	private PrivateBoard privateBoard;
-	private GenericBoard publicBoard;
-	private LinkedHashMap<String, Player> players = new LinkedHashMap<>();
+    private PrivateBoard privateBoard;
+    private GenericBoard publicBoard;
+    private LinkedHashMap<String, Player> players = new LinkedHashMap<>();
 
-	public GameEngine(ServerInstance serverInstance, int maximumPlayers) {
-		if (maximumPlayers < 2) {
-			this.maximumPlayers = 2;
-		} else {
-			this.maximumPlayers = maximumPlayers;
-		}
+    public GameEngine(ServerInstance serverInstance, int maximumPlayers) {
+        if (maximumPlayers < 2) {
+            this.maximumPlayers = 2;
+        } else {
+            this.maximumPlayers = maximumPlayers;
+        }
 
-		this.serverInstance = serverInstance;
-		this.privateBoard = new PrivateBoard();
-	}
+        this.serverInstance = serverInstance;
+        this.privateBoard = new PrivateBoard();
+    }
 
-	public void addPlayer(String playerThreadUUID, Player player) throws Exception {
-		if (!isGameFull()) {
-			this.players.put(playerThreadUUID, player);
+    public void addPlayer(String playerThreadUUID, Player player) throws Exception {
+        if (!isGameFull()) {
+            this.players.put(playerThreadUUID, player);
 
-			if (this.isGameFull()) {
-				this.gameStarted = true;
+            if (this.isGameFull() && adminInitializedBoard) {
+                this.gameStarted = true;
+                this.initializeCurrentPlayerId();
+            }
+        } else {
+            throw new Exception("Maximum number of players reached.");
+        }
+    }
 
-				int firstPlayerId = -1;
+    public void removePlayer(String playerThreadUUID) throws Exception {
+        if (this.players.containsKey(playerThreadUUID)) {
+            if (this.gameStarted && !this.gameFinished) {
+                this.players.get(playerThreadUUID).setConnected(false);
+            } else if (!this.gameStarted) {
+                this.players.remove(playerThreadUUID);
+            }
+            this.broadcastGameState();
+        } else {
+            throw new Exception("Player " + playerThreadUUID + " is not part of the game.");
+        }
+    }
 
-				// setting the player that will play first
-				for (String key : this.players.keySet()) {
-					Player currentPlayer = this.players.get(key);
+    // handle a client turn
+    public void doNextStep(ClientHandler clientHandler, ClientResponse clientResponse) {
+        Player player = this.getPlayerFromClientHandler(clientHandler);
+        boolean playAgain = false;
 
-					if (currentPlayer.getLevel().equals("USER")) {
-						firstPlayerId = currentPlayer.getId();
-						break;
-					}
-				}
+        if (!this.gameFinished && this.currentPlayerId == player.getId()) {
+            Tile selectedTile = clientResponse.getSelectedTile();
 
-				this.currentPlayerId = firstPlayerId;
-			}
-		} else {
-			throw new Exception("Maximum number of players reached.");
-		}
-	}
+            if (BoardVerifier.isValidTile(privateBoard, selectedTile)) {
+                if (BoardVerifier.isHit(privateBoard, selectedTile)) {
+                    privateBoard.getTiles()[selectedTile.getRow()][selectedTile.getCol()]
+                            .setTileType(TileType.Hit);
+                    player.upScore();
+                    playAgain = true;
+                } else {
+                    privateBoard.getTiles()[selectedTile.getRow()][selectedTile.getCol()]
+                            .setTileType(TileType.Miss);
+                }
+            }
 
-	public void removePlayer(String playerThreadUUID) throws Exception {
-		if (this.players.containsKey(playerThreadUUID)) {
-			if (this.gameStarted && !this.gameFinished) {
-				this.players.get(playerThreadUUID).setConnected(false);
-			} else if (!this.gameStarted) {
-				this.players.remove(playerThreadUUID);
-			}
-		} else {
-			throw new Exception("Player " + playerThreadUUID + " is not part of the game.");
-		}
-	}
+            if (BoardVerifier.gameFinished(privateBoard)) {
+                this.gameFinished = true;
+                this.endGame();
+            } else {
+                if (!playAgain) {
+                    this.updateCurrentPlayerId();
+                }
+                this.updatePublicBoard();
+                this.broadcastGameState();
+            }
+        }
+    }
 
-	// handle a client turn
-	public void doNextStep(ClientHandler clientHandler, ClientResponse clientResponse) {
-		Player player = this.getPlayerFromClientHandler(clientHandler);
+    // initialize the board from the admin response
+    public void initializeBoard(ClientHandler clientHandler, ClientResponse clientResponse) {
+        Player player = this.getPlayerFromClientHandler(clientHandler);
 
-		if (!this.gameFinished && this.currentPlayerId == player.getId()) {
-			Tile selectedTile = clientResponse.getSelectedTile();
+        PrivateBoard privateBoard = clientResponse.getAdminBoard();
 
-			if (BoardVerifier.isValidTile(privateBoard, selectedTile)) {
-				if (BoardVerifier.isHit(privateBoard, selectedTile)) {
-					privateBoard.getTiles()[selectedTile.getRow()][selectedTile.getCol()]
-							.setTileType(TileType.Hit);
-					player.upScore();
-				} else {
-					privateBoard.getTiles()[selectedTile.getRow()][selectedTile.getCol()]
-							.setTileType(TileType.Miss);
-				}
-			}
+        if (player.getLevel().equals("ADMIN") && BoardVerifier.verifyBoardInit(privateBoard)) {
+            this.adminInitializedBoard = true;
+            this.privateBoard = clientResponse.getAdminBoard();
+            this.publicBoard = clientResponse.getAdminBoard();
+            if (this.isGameFull()) {
+                this.initializeCurrentPlayerId();
+                this.gameStarted = true;
+            }
+            this.broadcastGameState();
+        }
+    }
 
-			if (BoardVerifier.gameFinished(privateBoard)) {
-				this.gameFinished = true;
-				this.endGame();
-			} else {
-				this.updateCurrentPlayerId();
-				this.updatePublicBoard();
-				this.broadcastGameState();
-			}
-		}
-	}
+    public void broadcastGameState() {
+        this.serverInstance.broadcastGameState();
+    }
 
-	// initialize the board from the admin response
-	public void initializeBoard(ClientHandler clientHandler, ClientResponse clientResponse) {
-		Player player = this.getPlayerFromClientHandler(clientHandler);
+    private void endGame() {
+        this.broadcastGameState();
+        this.gameStarted = false;
+        this.gameFinished = false;
+        this.adminInitializedBoard = false;
+        this.currentPlayerId = -1;
+        this.privateBoard = new PrivateBoard();
+        this.publicBoard = new PrivateBoard();
 
-		PrivateBoard privateBoard = clientResponse.getAdminBoard();
+        for (String key : this.players.keySet()) {
+            this.players.get(key).setScore(0);
+        }
+    }
 
-		if (player.getLevel().equals("ADMIN") && BoardVerifier.verifyBoardInit(privateBoard)) {
-			this.privateBoard = clientResponse.getAdminBoard();
-			this.publicBoard = clientResponse.getAdminBoard();
-			this.gameStarted = true;
+    public LinkedHashMap<String, Player> getPlayers() {
+        return this.players;
+    }
 
-			this.broadcastGameState();
-		}
-	}
+    public Player[] getPlayersArray() {
+        Player[] players = new Player[this.players.size()];
 
-	public void broadcastGameState() {
-		this.serverInstance.broadcastGameState();
-	}
+        int i = 0;
+        for (String key : this.players.keySet()) {
+            players[i] = this.players.get(key);
+            i++;
+        }
 
-	private void endGame() {
-		// todo reset game and players
-		this.broadcastGameState();
-	}
+        return players;
+    }
 
-	public LinkedHashMap<String, Player> getPlayers() {
-		return this.players;
-	}
+    public boolean isGameFull() {
+        // +1 because admin is not really a player
+        return this.players.size() >= this.maximumPlayers + 1;
+    }
 
-	public Player[] getPlayersArray() {
-		Player[] players = new Player[this.players.size()];
+    public Player getPlayerFromClientHandler(ClientHandler clientHandler) {
+        return this.players.get(clientHandler.getUuid());
+    }
 
-		int i = 0;
-		for (String key : this.players.keySet()) {
-			players[i] = this.players.get(key);
-			i++;
-		}
+    private void initializeCurrentPlayerId() {
+        int firstPlayerId = -1;
 
-		return players;
-	}
+        // setting the player that will play first
+        for (String key : this.players.keySet()) {
+            Player currentPlayer = this.players.get(key);
 
-	public boolean isGameFull() {
-		// +1 because admin is not really a player
-		return this.players.size() >= this.maximumPlayers + 1;
-	}
+            if (currentPlayer.getLevel().equals("USER")) {
+                firstPlayerId = currentPlayer.getId();
+                break;
+            }
+        }
 
-	public Player getPlayerFromClientHandler(ClientHandler clientHandler) {
-		return this.players.get(clientHandler.getUuid());
-	}
+        this.currentPlayerId = firstPlayerId;
+    }
 
-	private void updateCurrentPlayerId() {
-		// case where there is a single real player (not counting the admin)
-		if (this.players.size() == 2) {
-			return;
-		}
+    private void updateCurrentPlayerId() {
+        // case where there is a single real player (not counting the admin)
+        if (this.players.size() == 2) {
+            return;
+        }
 
-		Player[] currentPlayers = (Player[])this.players.keySet().toArray();
-		boolean isNext = false;
+        boolean isNext = false;
+        Player[] currentPlayers = new Player[this.players.size()];
 
-		for (int i = 0; i < currentPlayers.length; i++ ) {
-			Player currentPlayer = currentPlayers[i];
+        int i = 0;
+        for (String key : this.players.keySet()) {
+            Player currentPlayer = this.players.get(key);
+            currentPlayers[i] = currentPlayer;
+            i++;
+        }
 
-			if (currentPlayer.getLevel().equals("USER")) {
-				if (isNext) {
-					// found the next player
-					this.currentPlayerId = currentPlayer.getId();
-					return;
-				} else {
-					if (currentPlayer.getId() == this.currentPlayerId) {
-						isNext = true;
-					}
-				}
-			}
+        for (i = 0; i < currentPlayers.length; i++) {
+            Player currentPlayer = currentPlayers[i];
 
-			if (i == currentPlayers.length - 1) {
-				i = 0;
-			}
-		}
-	}
+            if (currentPlayer.getLevel().equals("USER") && this.isPlayerConnected(currentPlayer)) {
+                if (isNext) {
+                    // found the next player
+                    this.currentPlayerId = currentPlayer.getId();
+                    return;
+                } else {
+                    if (currentPlayer.getId() == this.currentPlayerId) {
+                        isNext = true;
+                    }
+                }
+            }
 
-	private void updatePublicBoard() {
-		this.publicBoard = this.privateBoard;
-	}
+            if (i == currentPlayers.length - 1) {
+                i = -1;
+            }
+        }
+    }
 
-	public GenericBoard getPublicBoard() {
-		return this.publicBoard;
-	}
+    private void updatePublicBoard() {
+        this.publicBoard = this.privateBoard;
+    }
 
-	public PrivateBoard getPrivateBoard() {
-		return this.privateBoard;
-	}
+    public GenericBoard getPublicBoard() {
+        return this.publicBoard;
+    }
+
+    public PrivateBoard getPrivateBoard() {
+        return this.privateBoard;
+    }
+
+    public boolean getGameStarted() {
+        return this.gameStarted;
+    }
+
+    public boolean getGameFinished() {
+        return this.gameFinished;
+    }
+
+    public int getCurrentPlayerId() {
+        return this.currentPlayerId;
+    }
+
+    private String getPlayerUUID(Player player) {
+        for (String key : this.players.keySet()) {
+            Player currentPlayer = this.players.get(key);
+            if (player.getId() == currentPlayer.getId()) {
+                return key;
+            }
+        }
+
+        return null;
+    }
+
+    private boolean isPlayerConnected(Player player) {
+        String playerUUID = this.getPlayerUUID(player);
+        HashMap<String, ClientHandler> clients = this.serverInstance.getClients();
+
+        for (String key : clients.keySet()) {
+            ClientHandler currentClient = clients.get(key);
+            if (currentClient.getUuid() == playerUUID) {
+                return currentClient.getClientIsConnected();
+            }
+        }
+
+        return false;
+    }
 }

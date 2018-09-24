@@ -11,13 +11,13 @@ public class BoardVerifier {
 
 			if (dog.getDirection() == DogDirection.Horizontal) {
 				for (int i = 0; i < dog.getLength(); i++) {
-					if (b.getTiles()[dog.getxStart() + i][dog.getyStart()].getTileType() != TileType.Hit) {
+					if (b.getTiles()[dog.getyStart()][dog.getxStart() + i].getTileType() != TileType.Hit) {
 						return false;
 					}
 				}
 			} else if (dog.getDirection() == DogDirection.Vertical) {
 				for (int j = 0; j < dog.getLength(); j++) {
-					if (b.getTiles()[dog.getxStart()][dog.getyStart() + j].getTileType() != TileType.Hit) {
+					if (b.getTiles()[dog.getyStart() + j][dog.getxStart()].getTileType() != TileType.Hit) {
 						return false;
 					}
 				}
@@ -29,7 +29,7 @@ public class BoardVerifier {
 
 	public static boolean isValidTile(PrivateBoard b, Tile t) {
 		if (t.getRow() >= 0 && t.getRow() < b.getBoardSize() && t.getCol() >= 0 && t.getCol() < b.getBoardSize()
-				&& b.getTiles()[t.getCol()][t.getRow()].getTileType() == TileType.Empty) {
+				&& b.getTiles()[t.getRow()][t.getCol()].getTileType() == TileType.Empty) {
 			return true;
 		}
 		return false;

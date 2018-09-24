@@ -75,12 +75,19 @@ public class ServerInstance {
 		System.out.println("Client " + uuid + " disconnected.");
 	}
 
+	public HashMap<String, ClientHandler> getClients() {
+		return this.clients;
+	}
+
 	public void broadcastGameState() {
 		for (String key : this.clients.keySet()) {
 			try {
 				ServerRequest gameStateServerResponse;
 
-				gameStateServerResponse = new ServerRequest("GAME_STATE", false, false, -1,
+				gameStateServerResponse = new ServerRequest("GAME_STATE",
+						this.gameEngine.getGameStarted(),
+						this.gameEngine.getGameFinished(),
+						this.gameEngine.getCurrentPlayerId(),
 						this.gameEngine.getPlayers().get(key).getLevel().equals("USER")
 								? this.gameEngine.getPublicBoard()
 								: null,

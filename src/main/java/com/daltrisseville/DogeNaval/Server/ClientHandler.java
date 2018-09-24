@@ -12,6 +12,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.LinkedHashMap;
 
 public class ClientHandler extends Thread {
 
@@ -74,7 +75,17 @@ public class ClientHandler extends Thread {
                 AuthenticationService authenticationService = new AuthenticationService();
                 User user = authenticationService.authenticatePlayer(clientResponse);
 
-                if (user != null) {
+                boolean isUserAlreadyConnected = false;
+                LinkedHashMap<String, Player> players = this.serverInstance.getGameEngine().getPlayers();
+                for (String key : players.keySet()) {
+                    Player currentPlayer = players.get(key);
+                    if (currentPlayer.getId() == user.getId()) {
+                        isUserAlreadyConnected = true;
+                        break;
+                    }
+                }
+
+                if (user != null && !isUserAlreadyConnected) {
                     Player player = new Player(user, 0, true);
 
                     try {
@@ -143,5 +154,9 @@ public class ClientHandler extends Thread {
 
     public String getUuid() {
         return uuid;
+    }
+
+    public boolean getClientIsConnected() {
+        return this.clientIsConnected;
     }
 }
