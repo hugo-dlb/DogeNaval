@@ -118,7 +118,7 @@ public class BoardVerifier {
 
 		// ArrayList<Integer> expectedLengths = (ArrayList<Integer>)
 		// Arrays.stream(b.getExpectedDogList()).boxed().collect(Collectors.toList());
-		ArrayList<Integer> expectedLengths = b.getExpectedDogList();
+		ArrayList<Integer> expectedLengths = new ArrayList<Integer>(b.getExpectedDogList());
 		if (b.getExpectedDogList().size() != b.getDogs().size()) {
 			return false;
 		}

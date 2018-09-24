@@ -81,8 +81,13 @@ public class ClientInstance {
 			if (sr.getEventType().equals("GAME_STATE")) {
 				if (sr.isAdmin()) {
 					if (!this.launched) {
+						System.out.println("startAdminPanel");
+						
 						gui.startAdminPanel();
 						this.launched = true;
+						
+						PrivateBoard newBoard = sr.getPrivateBoard();
+						gui.updateAdminBoard(newBoard);
 					} else {
 						PrivateBoard newBoard = sr.getPrivateBoard();
 						gui.updateAdminBoard(newBoard);

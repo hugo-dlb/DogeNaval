@@ -44,7 +44,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 	JFrame frame = new JFrame("DogeNavalClient");
 	JPanel container = new JPanel();
-	
+
 	JPanel loginPage = new JPanel();
 	JPanel waitPage = new JPanel();
 	JPanel playerPage = new JPanel();
@@ -60,9 +60,9 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	JTextField passwordTextField = new JTextField(10);
 	JButton buttonLogin = new JButton("login");
 	JButton buttonOne = new JButton("N/A");
-	
+
 	// WaitPage
-	JLabel labelWait=new JLabel("");
+	JLabel labelWait = new JLabel("");
 
 	// gamePage
 	JButton buttonSecond = new JButton("N/A");
@@ -88,7 +88,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	public void initGUI() {
 
 		frame.setMinimumSize(new Dimension(500, 400));
-		frame.setSize(new Dimension(600, 600));
+		frame.setSize(new Dimension(700, 600));
 
 		container.setLayout(cl);
 		playerPage.setLayout(new BorderLayout());
@@ -104,7 +104,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		loginPage.add(passwordTextField);
 		loginPage.add(buttonLogin);
 		loginPage.add(buttonOne);
-		
+
 		waitPage.add(labelWait);
 
 		playerPage_top.add(buttonSecond);
@@ -120,11 +120,11 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		loginPage.setBackground(myGreen);
 		playerPage_top.setBackground(myGray);
 		waitPage.setBackground(myYellow);
-		
+
 		playerPage.add(playerPage_top, BorderLayout.NORTH);
 		playerPage.add(boardPanel, BorderLayout.CENTER);
 
-		adminPage.add(labelScores,BorderLayout.WEST);
+		adminPage.add(labelScores, BorderLayout.WEST);
 		adminPage.add(adminPage_top, BorderLayout.NORTH);
 		adminPage.add(adminPanel, BorderLayout.CENTER);
 
@@ -134,7 +134,6 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		container.add(adminPage, "adminPage");
 
 		switchPage("loginPage");
-		
 
 		buttonLogin.setActionCommand("login");
 		buttonOne.setActionCommand("1");
@@ -160,28 +159,30 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 		frame.add(container);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//frame.pack();
+		// frame.pack();
 		frame.setVisible(true);
 
 		// test
-		//updateBoard(new GenericBoard());
+		// updateBoard(new GenericBoard());
 
 	}
 
 	public void updatePlayerBoard(GenericBoard newBoard) {
+		System.out.println("Update PlayerBoard");
 		boardPanel.setBoard(newBoard);
 
 		boardPanel.updateUI();
 	}
+
 	public void updateAdminBoard(PrivateBoard newBoard) {
+
+		System.out.println("Update AdminBoard");
 		adminPanel.setBoard(newBoard);
-		System.out.println("ee");
 
 		adminPanel.updateUI();
-		
-		//String scores;
-		//for() players set text
-		
+
+		// String scores;
+		// for() players set text
 
 	}
 
@@ -229,7 +230,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			}
 			break;
 		case "1":
-			//startGamePanel();
+			// startGamePanel();
 			break;
 
 		// game
@@ -237,11 +238,11 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			// switchPanel("firstPanel");
 			break;
 		case "3":
-			 //Tests
+			// Tests
 			boardPanel.getBoard().getTiles()[test][test].setTileType(TileType.Miss);
 			test++;
 			updatePlayerBoard(boardPanel.getBoard());
-			
+
 			break;
 
 		case "attack":
@@ -280,14 +281,18 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			} else {
 				labelInfo.setText("All dogs placed, please send");
 			}
+			//System.out.println(" doglistexpe : "+ adminPanel.getBoard().getExpectedDogList());
+			System.out.println("clientsendbefore : "+ClientInstance.buildAdminResponse(adminPanel.getBoard()));
 
 			break;
 		case "orientation":
 			switchOrientation();
 			break;
 		case "sendBoard":
+			System.out.println("clientsend : "+ClientInstance.buildAdminResponse(adminPanel.getBoard()));
 			try {
 				if (BoardVerifier.verifyBoardInit(adminPanel.getBoard())) {
+					
 					clientInstance.sendDataToServer(ClientInstance.buildAdminResponse(adminPanel.getBoard()));
 				} else {
 					JOptionPane.showMessageDialog(null, "Board not valid", "Error", JOptionPane.ERROR_MESSAGE);
