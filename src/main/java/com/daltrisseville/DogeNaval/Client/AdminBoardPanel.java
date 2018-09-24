@@ -31,7 +31,7 @@ public class AdminBoardPanel extends JPanel {
 	private Image dogHImage = dogHImageIcon.getImage();
 	private Image dogVImage = dogVImageIcon.getImage();
 
-	private DogDirection actualDirection;
+	private DogDirection actualDirection; 
 	private int toPlaceDog;
 	private boolean allPlaced;
 

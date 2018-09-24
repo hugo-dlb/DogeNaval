@@ -300,7 +300,6 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			break;
 		default:
 		}
-
 	}
 
 	public void switchOrientation() {
