@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,12 +17,15 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JRootPane;
 import javax.swing.JTextField;
 
 import com.daltrisseville.DogeNaval.Client.Entities.BoardVerifier;
 import com.daltrisseville.DogeNaval.Client.Entities.Dog;
 import com.daltrisseville.DogeNaval.Client.Entities.DogDirection;
 import com.daltrisseville.DogeNaval.Client.Entities.GenericBoard;
+import com.daltrisseville.DogeNaval.Client.Entities.Player;
 import com.daltrisseville.DogeNaval.Client.Entities.PrivateBoard;
 import com.daltrisseville.DogeNaval.Client.Entities.Tile;
 import com.daltrisseville.DogeNaval.Client.Entities.TileType;
@@ -44,6 +48,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 	JFrame frame = new JFrame("DogeNavalClient");
 	JPanel container = new JPanel();
+	JRootPane jrootpane;
 
 	JPanel loginPage = new JPanel();
 	JPanel waitPage = new JPanel();
@@ -57,7 +62,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 	// loginPage
 	JTextField loginTextField = new JTextField(10);
-	JTextField passwordTextField = new JTextField(10);
+	JPasswordField passwordTextField = new JPasswordField(10);
 	JButton buttonLogin = new JButton("login");
 	JButton buttonOne = new JButton("N/A");
 
@@ -99,6 +104,8 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 		adminBoard = new PrivateBoard();
 		adminPanel = new AdminBoardPanel(adminBoard);
+
+		labelWait.setFont(new Font("Serif", Font.PLAIN, 18));
 
 		loginPage.add(loginTextField);
 		loginPage.add(passwordTextField);
@@ -157,7 +164,11 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		buttonOrientation.addActionListener(this);
 		buttonSendBoard.addActionListener(this);
 
+		jrootpane = frame.getRootPane();
+		jrootpane.setDefaultButton(buttonLogin);
+
 		frame.add(container);
+		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// frame.pack();
 		frame.setVisible(true);
@@ -186,9 +197,24 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 	}
 
+	public void goToLobby(Player[] players) {
+		
+		switchPage("waitPage");
+		jrootpane.setDefaultButton(null);
+
+		String s = "";
+		s += "<html>Game not started. Please wait... <br>";
+		for (Player p : players) {
+			s += p.toString() + "<br>";
+		}
+		s += "</html>";
+		labelWait.setText(s);
+	}
+
 	public void startGamePanel() {
 
 		switchPage("playerPage");
+		jrootpane.setDefaultButton(buttonSendTile);
 		boardPanel.addMouseListener(this);
 		adminMode = false;
 
@@ -197,8 +223,10 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	public void startAdminPanel() {
 
 		switchPage("adminPage");
+		jrootpane.setDefaultButton(buttonValidate);
 		adminPanel.addMouseListener(this);
 		adminMode = true;
+
 		labelInfo.setText(
 				"Place dog length " + adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()));
 		labelOrientation.setText("Horizontal");
@@ -249,7 +277,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			if (boardPanel.getSelectedTile() != null) {
 				// send to server
 				try {
-					System.out.println("Tile sent :" + boardPanel.getSelectedTile().toString());
+					// System.out.println("Tile sent :" + boardPanel.getSelectedTile().toString());
 					clientInstance.sendDataToServer(ClientInstance.buildTileResponse(boardPanel.getSelectedTile()));
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
@@ -281,18 +309,19 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			} else {
 				labelInfo.setText("All dogs placed, please send");
 			}
-			//System.out.println(" doglistexpe : "+ adminPanel.getBoard().getExpectedDogList());
-			System.out.println("clientsendbefore : "+ClientInstance.buildAdminResponse(adminPanel.getBoard()));
+			// System.out.println(" doglistexpe : "+
+			// adminPanel.getBoard().getExpectedDogList());
 
 			break;
 		case "orientation":
 			switchOrientation();
 			break;
 		case "sendBoard":
-			System.out.println("clientsend : "+ClientInstance.buildAdminResponse(adminPanel.getBoard()));
+			// System.out.println("clientsend :
+			// "+ClientInstance.buildAdminResponse(adminPanel.getBoard()));
 			try {
 				if (BoardVerifier.verifyBoardInit(adminPanel.getBoard())) {
-					
+					clientInstance.setAdminCreating(false);
 					clientInstance.sendDataToServer(ClientInstance.buildAdminResponse(adminPanel.getBoard()));
 				} else {
 					JOptionPane.showMessageDialog(null, "Board not valid", "Error", JOptionPane.ERROR_MESSAGE);

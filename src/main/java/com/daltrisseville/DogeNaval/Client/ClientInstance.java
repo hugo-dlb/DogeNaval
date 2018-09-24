@@ -27,6 +27,8 @@ public class ClientInstance {
 	boolean myTurn;
 
 	boolean launched;
+	boolean connected;
+	boolean adminCreating;
 
 	DogeNavalGUI gui;
 
@@ -34,6 +36,8 @@ public class ClientInstance {
 		gui = new DogeNavalGUI(this);
 		try {
 			this.launched = false;
+			this.adminCreating = false;
+			this.connected = false;
 			initConnexion();
 			// start();
 			awaitServerUpdate();
@@ -80,23 +84,31 @@ public class ClientInstance {
 
 			if (sr.getEventType().equals("GAME_STATE")) {
 				if (sr.isAdmin()) {
-					if (!this.launched) {
+					if (!sr.isGameStarted() && !this.adminCreating) {
 						System.out.println("startAdminPanel");
-						
+						this.adminCreating = true;
+
 						gui.startAdminPanel();
+
+					} else if (this.adminCreating) {
+						System.out.println("new player connects");
+					} else if (!this.launched) {
+
+						System.out.println("startGameForAdmin");
 						this.launched = true;
-						
-						PrivateBoard newBoard = sr.getPrivateBoard();
-						gui.updateAdminBoard(newBoard);
 					} else {
 						PrivateBoard newBoard = sr.getPrivateBoard();
 						gui.updateAdminBoard(newBoard);
+
 					}
 
 				} else {// not admin
 
-					// in progress
-					if (!this.launched) {
+					if (!sr.isGameStarted()) {
+						gui.goToLobby(sr.getPlayers());
+					} else if (!this.launched) {
+						System.out.println("startGamePanel");
+
 						gui.startGamePanel();
 						this.launched = true;
 					} else {
@@ -109,13 +121,21 @@ public class ClientInstance {
 			} else if (sr.getEventType().equals("LOGIN_REQUEST")) {
 
 				if (sr.isGameStarted()) {
-					JOptionPane.showMessageDialog(null, "Game full", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Sorry! Game already started!", "Error", JOptionPane.ERROR_MESSAGE);
+				} else if(sr.isGameFull()) {
+					JOptionPane.showMessageDialog(null, "Sorry! Game full", "Error", JOptionPane.ERROR_MESSAGE);
+				}else if (!this.connected) {
+					this.connected = true;
 				} else {
 					JOptionPane.showMessageDialog(null, "Wrong login/password", "Error", JOptionPane.ERROR_MESSAGE);
 				}
-			} 
+			}
 
 		}
+	}
+
+	public void setAdminCreating(boolean adminCreating) {
+		this.adminCreating = adminCreating;
 	}
 
 	public static String buildAdminResponse(PrivateBoard b) {
@@ -160,4 +180,3 @@ public class ClientInstance {
 
 	}
 }
-
