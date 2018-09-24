@@ -59,7 +59,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	JTextField loginTextField = new JTextField(10);
 	JTextField passwordTextField = new JTextField(10);
 	JButton buttonLogin = new JButton("login");
-	JButton buttonOne = new JButton("Test player page");
+	JButton buttonOne = new JButton("N/A");
 	
 	// WaitPage
 	JLabel labelWait=new JLabel("");
@@ -229,7 +229,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			}
 			break;
 		case "1":
-			startGamePanel();
+			//startGamePanel();
 			break;
 
 		// game

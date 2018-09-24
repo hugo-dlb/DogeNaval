@@ -108,17 +108,7 @@ public class ClientInstance {
 				} else {
 					JOptionPane.showMessageDialog(null, "Wrong login/password", "Error", JOptionPane.ERROR_MESSAGE);
 				}
-			} /*
-				 * 
-				 * switch (sr.getEventType()) { case "LOGIN_REQUEST": break; case
-				 * "ADMIN_ACCEPT": gui.startAdminPanel(); break; case "GAME_START":
-				 * gui.startGamePanel(); break; case "GAME_STATE": gui.startAdminPanel();
-				 * 
-				 * // GenericBoard newBoard=serverResponse.getPublicBoard(); //
-				 * gui.updatePlayerBoard(newBoard); break; case "ADMIN_GAME_STATE": //
-				 * PrivateBoard newBoard=serverResponse.getPrivateBoard(); //
-				 * gui.updateAdminBoard(newBoard); break;
-				 */
+			} 
 
 		}
 	}
@@ -165,3 +155,4 @@ public class ClientInstance {
 
 	}
 }
+

@@ -4,6 +4,7 @@ import com.daltrisseville.DogeNaval.Client.Entities.GenericBoard;
 import com.daltrisseville.DogeNaval.Client.Entities.Player;
 import com.daltrisseville.DogeNaval.Client.Entities.PrivateBoard;
 
+
 public class ServerRequest {
 
 	private String eventType;
@@ -73,3 +74,4 @@ public class ServerRequest {
 	}
 
 }
+

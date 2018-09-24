@@ -25,12 +25,12 @@ public class AdminBoardPanel extends JPanel {
 	private final Color myGray = new Color(57, 49, 49);// 121, 134, 134);
 	private final Color myBlue = new Color(3, 201, 169);
 	private final Color myWhite = new Color(236, 240, 241);
-	
+
 	private final ImageIcon dogHImageIcon = new ImageIcon("src/img/dogH.png");
 	private final ImageIcon dogVImageIcon = new ImageIcon("src/img/dogV.png");
 	private Image dogHImage = dogHImageIcon.getImage();
 	private Image dogVImage = dogVImageIcon.getImage();
-	
+
 	private DogDirection actualDirection;
 	private int toPlaceDog;
 	private boolean allPlaced;
@@ -38,9 +38,9 @@ public class AdminBoardPanel extends JPanel {
 	public AdminBoardPanel(PrivateBoard b) {
 		this.board = b;
 		this.selectedTile = null;
-		this.actualDirection=DogDirection.Horizontal;
-		this.toPlaceDog=0;
-		this.allPlaced=false;
+		this.actualDirection = DogDirection.Horizontal;
+		this.toPlaceDog = 0;
+		this.allPlaced = false;
 	}
 
 	public int getToPlaceDog() {
@@ -50,9 +50,9 @@ public class AdminBoardPanel extends JPanel {
 	public void setToPlaceDog(int toPlaceDog) {
 		this.toPlaceDog = toPlaceDog;
 	}
-	
+
 	public boolean isAllPlaced() {
-		return this.board.getExpectedDogList().size()==this.toPlaceDog?true:false;
+		return this.board.getExpectedDogList().size() == this.toPlaceDog ? true : false;
 	}
 
 	public DogDirection getActualDirection() {
@@ -133,18 +133,19 @@ public class AdminBoardPanel extends JPanel {
 			}
 
 		}
-		
-		//dogs
-		for(Dog dog:this.board.getDogs()) {
-			if(dog.getDirection()==DogDirection.Horizontal) {
-				g.drawImage(dogHImage, this.getRectSize()*dog.getxStart(),this.getRectSize()*dog.getyStart(),this.getRectSize()*dog.getLength(),this.getRectSize(),this);
-			}else if(dog.getDirection()==DogDirection.Vertical){
-				g.drawImage(dogVImage, this.getRectSize()*dog.getxStart(),this.getRectSize()*dog.getyStart(),this.getRectSize(),this.getRectSize()*dog.getLength(),this);
+
+		// dogs
+		for (Dog dog : this.board.getDogs()) {
+			if (dog.getDirection() == DogDirection.Horizontal) {
+				g.drawImage(dogHImage, this.getRectSize() * dog.getxStart(), this.getRectSize() * dog.getyStart(),
+						this.getRectSize() * dog.getLength(), this.getRectSize(), this);
+			} else if (dog.getDirection() == DogDirection.Vertical) {
+				g.drawImage(dogVImage, this.getRectSize() * dog.getxStart(), this.getRectSize() * dog.getyStart(),
+						this.getRectSize(), this.getRectSize() * dog.getLength(), this);
 			}
-			
-			
+
 		}
-		
+
 		if (selectedTile != null) {
 			g.setColor(myRed);
 			for (int i = 0; i < 4; i++) {

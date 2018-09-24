@@ -106,6 +106,7 @@ public class ClientHandler extends Thread {
                 switch (clientResponse.getEventType()) {
                     case "SEND_BOARD":
                         this.serverInstance.getGameEngine().initializeBoard(this, clientResponse);
+                        System.out.println(clientResponse);
                         break;
                     case "PLAY":
                         this.serverInstance.getGameEngine().doNextStep(this, clientResponse);
