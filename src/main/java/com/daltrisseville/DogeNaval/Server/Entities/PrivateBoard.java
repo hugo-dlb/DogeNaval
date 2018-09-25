@@ -2,7 +2,9 @@ package com.daltrisseville.DogeNaval.Server.Entities;
 
 import java.util.ArrayList;
 
-
+/**
+ * This class represents the admin game board
+ */
 public class PrivateBoard extends GenericBoard {
 
     // private int[] expectedDogList;

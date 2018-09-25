@@ -1,6 +1,8 @@
 package com.daltrisseville.DogeNaval.Server.Entities;
 
-
+/**
+ * This class represents a tile of the board
+ */
 public class Tile {
 	private int row;
 	private int col;

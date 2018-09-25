@@ -1,5 +1,8 @@
 package com.daltrisseville.DogeNaval.Server.Entities;
 
+/**
+ * This class represents a "boat" in the original battleships game
+ */
 public class Dog {
 	private int length;
 	private int xStart;

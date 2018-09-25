@@ -23,7 +23,7 @@ public class GameEngine {
     private LinkedHashMap<String, Player> players = new LinkedHashMap<>();
 
     /**
-     * Instantiate the GameEngine with the server instance and a given number of maximum players in the game
+     * Instantiates the GameEngine with the server instance and a given number of maximum players in the game
      *
      * @param serverInstance
      * @param maximumPlayers
@@ -40,7 +40,7 @@ public class GameEngine {
     }
 
     /**
-     * Add a player to the game
+     * Adds a player to the game
      *
      * @param playerThreadUUID
      * @param player
@@ -60,7 +60,7 @@ public class GameEngine {
     }
 
     /**
-     * Remove a player from the game
+     * Removes a player from the game
      *
      * @param playerThreadUUID
      * @throws Exception
@@ -79,7 +79,7 @@ public class GameEngine {
     }
 
     /**
-     * Handle a move (turn) from a client
+     * Handles a move (turn) from a client
      *
      * @param clientHandler
      * @param clientResponse
@@ -117,7 +117,7 @@ public class GameEngine {
     }
 
     /**
-     * Initialize the board from the admin response
+     * Initializes the board from the admin response
      */
     public void initializeBoard(ClientHandler clientHandler, ClientResponse clientResponse) {
         Player player = this.getPlayerFromClientHandler(clientHandler);
@@ -137,14 +137,14 @@ public class GameEngine {
     }
 
     /**
-     * Broadcast the game state to all clients
+     * Broadcasts the game state to all clients
      */
     public void broadcastGameState() {
         this.serverInstance.broadcastGameState();
     }
 
     /**
-     * Reset the game
+     * Resets the game
      */
     private void endGame() {
         this.broadcastGameState();
@@ -277,7 +277,7 @@ public class GameEngine {
     }
 
     /**
-     * Check if a player is connected
+     * Checks if a player is connected
      *
      * @param player
      * @return

@@ -12,6 +12,9 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.UUID;
 
+/**
+ * This class is the instance of the DogeNaval server
+ */
 public class ServerInstance {
 
 	private final static int SERVER_PORT = 5056;
@@ -19,11 +22,23 @@ public class ServerInstance {
 
 	private HashMap<String, ClientHandler> clients = new HashMap<>();
 
+	/**
+	 * Instantiate the server with a given number of maximum players for a game optionally
+	 *
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		ServerInstance serverInstance = new ServerInstance();
 		serverInstance.start(args);
 	}
 
+	/**
+	 * Starts the server and handle client connexions
+	 *
+	 * @param args
+	 * @throws IOException
+	 */
 	private void start(String[] args) throws IOException {
 		ServerSocket serverSocket = new ServerSocket(SERVER_PORT);
 
@@ -56,6 +71,13 @@ public class ServerInstance {
 		}
 	}
 
+	/**
+	 * Creates a new dedicated thread for the given client socket
+	 *
+	 * @param clientSocket
+	 * @param dataInputStream
+	 * @param dataOutputStream
+	 */
 	private void addClient(Socket clientSocket, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
 		String uuid = UUID.randomUUID().toString();
 
@@ -70,6 +92,11 @@ public class ServerInstance {
 		System.out.println("Client " + uuid + " connected.");
 	}
 
+	/**
+	 * Removes a client
+	 *
+	 * @param uuid
+	 */
 	public void removeClient(String uuid) {
 		this.clients.remove(uuid);
 		System.out.println("Client " + uuid + " disconnected.");
@@ -79,6 +106,9 @@ public class ServerInstance {
 		return this.clients;
 	}
 
+	/**
+	 * Broadcasts the game state to all clients
+	 */
 	public void broadcastGameState() {
 		for (String key : this.clients.keySet()) {
 			try {

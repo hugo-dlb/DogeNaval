@@ -1,5 +1,8 @@
 package com.daltrisseville.DogeNaval.Server.Entities;
 
+/**
+ * This class represents a player in the game
+ */
 public class Player {
 
     private User user;

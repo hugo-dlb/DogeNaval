@@ -2,6 +2,9 @@ package com.daltrisseville.DogeNaval.Client.Entities;
 
 import com.daltrisseville.DogeNaval.Server.Entities.User;
 
+/**
+ * This class represents a player in the game
+ */
 public class Player {
 
 	private User user;

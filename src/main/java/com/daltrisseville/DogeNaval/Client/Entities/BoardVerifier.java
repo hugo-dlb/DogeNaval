@@ -1,23 +1,30 @@
 package com.daltrisseville.DogeNaval.Client.Entities;
 
 import java.util.ArrayList;
-//import java.util.Arrays;
-//import java.util.stream.Collectors;
 
+/**
+ * This class provides validation static functions
+ */
 public class BoardVerifier {
 
+	/**
+	 * Determines if a game is finished based on the given private board
+	 *
+	 * @param b
+	 * @return
+	 */
 	public static boolean gameFinished(PrivateBoard b) {
 		for (Dog dog : b.getDogs()) {
 
 			if (dog.getDirection() == DogDirection.Horizontal) {
 				for (int i = 0; i < dog.getLength(); i++) {
-					if (b.getTiles()[dog.getxStart() + i][dog.getyStart()].getTileType() != TileType.Hit) {
+					if (b.getTiles()[dog.getyStart()][dog.getxStart() + i].getTileType() != TileType.Hit) {
 						return false;
 					}
 				}
 			} else if (dog.getDirection() == DogDirection.Vertical) {
 				for (int j = 0; j < dog.getLength(); j++) {
-					if (b.getTiles()[dog.getxStart()][dog.getyStart() + j].getTileType() != TileType.Hit) {
+					if (b.getTiles()[dog.getyStart() + j][dog.getxStart()].getTileType() != TileType.Hit) {
 						return false;
 					}
 				}
@@ -27,14 +34,28 @@ public class BoardVerifier {
 
 	}
 
+	/**
+	 * Determines if a tile is valid based on the given private board
+	 *
+	 * @param b
+	 * @param t
+	 * @return
+	 */
 	public static boolean isValidTile(PrivateBoard b, Tile t) {
 		if (t.getRow() >= 0 && t.getRow() < b.getBoardSize() && t.getCol() >= 0 && t.getCol() < b.getBoardSize()
-				&& b.getTiles()[t.getCol()][t.getRow()].getTileType() == TileType.Empty) {
+				&& b.getTiles()[t.getRow()][t.getCol()].getTileType() == TileType.Empty) {
 			return true;
 		}
 		return false;
 	}
 
+	/**
+	 * Determines if a tile is hit
+	 *
+	 * @param b
+	 * @param t
+	 * @return
+	 */
 	public static boolean isHit(PrivateBoard b, Tile t) {
 		for (Dog dog : b.getDogs()) {
 
@@ -55,6 +76,13 @@ public class BoardVerifier {
 		return false;
 	}
 
+	/**
+	 * Determines if a dog placement is valid
+	 *
+	 * @param b
+	 * @param newDog
+	 * @return
+	 */
 	public static boolean isValidDog(PrivateBoard b, Dog newDog) {
 		ArrayList<Tile> occupiedTiles = new ArrayList<Tile>();
 
@@ -113,6 +141,12 @@ public class BoardVerifier {
 
 	}
 
+	/**
+	 * Determines if a board is valid
+	 *
+	 * @param b
+	 * @return
+	 */
 	public static boolean verifyBoardInit(PrivateBoard b) {
 		ArrayList<Tile> occupiedTiles = new ArrayList<Tile>();
 

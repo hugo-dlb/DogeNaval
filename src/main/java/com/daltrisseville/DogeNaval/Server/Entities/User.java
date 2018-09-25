@@ -1,5 +1,8 @@
 package com.daltrisseville.DogeNaval.Server.Entities;
 
+/**
+ * This class represents a user of the application
+ */
 public class User {
 
     private static int maxId;

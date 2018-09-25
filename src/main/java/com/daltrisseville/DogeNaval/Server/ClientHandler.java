@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.LinkedHashMap;
 
+/**
+ * This class is a thread that handles a client connection
+ */
 public class ClientHandler extends Thread {
 
     private final ServerInstance serverInstance;
@@ -24,6 +27,15 @@ public class ClientHandler extends Thread {
     private boolean clientIsConnected = true;
     private boolean clientIsAuthenticated = false;
 
+    /**
+     * Instantiates a ClientHandler with the server instance, the given client socket and its uuid
+     *
+     * @param serverInstance
+     * @param uuid
+     * @param socket
+     * @param dataInputStream
+     * @param dataOutputStream
+     */
     public ClientHandler(ServerInstance serverInstance, String uuid, Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
         this.serverInstance = serverInstance;
         this.uuid = uuid;
@@ -32,6 +44,9 @@ public class ClientHandler extends Thread {
         this.dataOutputStream = dataOutputStream;
     }
 
+    /**
+     * Starts the thread
+     */
     @Override
     public void run() {
         this.requestAuthentication();
@@ -60,6 +75,9 @@ public class ClientHandler extends Thread {
         }
     }
 
+    /**
+     * Requests the credentials to the client
+     */
     private void requestAuthentication() {
         while (this.clientIsConnected && !this.clientIsAuthenticated) {
             try {
@@ -103,6 +121,9 @@ public class ClientHandler extends Thread {
         }
     }
 
+    /**
+     * Handle client responses
+     */
     private void startMainLoop() {
         while (this.clientIsConnected && this.clientIsAuthenticated) {
             try {
@@ -138,10 +159,21 @@ public class ClientHandler extends Thread {
         }
     }
 
+    /**
+     * Sends data to the client
+     *
+     * @param data
+     * @throws Exception
+     */
     public void emitData(String data) throws Exception {
         this.dataOutputStream.writeUTF(data);
     }
 
+    /**
+     * Returns the login request JSON string
+     *
+     * @return
+     */
     private String buildLoginRequest() {
         ServerRequest serverRequest = new ServerRequest("LOGIN_REQUEST", false, false,
                 -1, null, null, null,
