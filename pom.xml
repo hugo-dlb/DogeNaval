@@ -24,6 +24,7 @@
 			<artifactId>gson</artifactId>
 			<version>2.8.5</version>
 		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/com.levigo/gwt-awt -->
 		<dependency>
 			<groupId>com.levigo</groupId>
@@ -31,10 +32,15 @@
 			<version>0.0.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-javadoc-plugin</artifactId>
+			<version>2.9.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
-		<pluginManagement><!-- lock down plugins versions to avoid using Maven 
+		<pluginManagement><!-- lock down pmvn javadoc:javadoclugins versions to avoid using Maven
 				defaults (may be moved to parent pom) -->
 			<plugins>
 				<plugin>
@@ -65,6 +71,18 @@
 				<plugin>
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>2.8.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>

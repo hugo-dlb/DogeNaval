@@ -6,6 +6,9 @@ import com.daltrisseville.DogeNaval.Server.Entities.Communications.ClientRespons
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+/**
+ * This class contains the core game logic of DogeNaval.
+ */
 public class GameEngine {
 
     private ServerInstance serverInstance;
@@ -19,6 +22,12 @@ public class GameEngine {
     private GenericBoard publicBoard;
     private LinkedHashMap<String, Player> players = new LinkedHashMap<>();
 
+    /**
+     * Instantiate the GameEngine with the server instance and a given number of maximum players in the game
+     *
+     * @param serverInstance
+     * @param maximumPlayers
+     */
     public GameEngine(ServerInstance serverInstance, int maximumPlayers) {
         if (maximumPlayers < 2) {
             this.maximumPlayers = 2;
@@ -30,6 +39,13 @@ public class GameEngine {
         this.privateBoard = new PrivateBoard();
     }
 
+    /**
+     * Add a player to the game
+     *
+     * @param playerThreadUUID
+     * @param player
+     * @throws Exception
+     */
     public void addPlayer(String playerThreadUUID, Player player) throws Exception {
         if (!isGameFull()) {
             this.players.put(playerThreadUUID, player);
@@ -43,6 +59,12 @@ public class GameEngine {
         }
     }
 
+    /**
+     * Remove a player from the game
+     *
+     * @param playerThreadUUID
+     * @throws Exception
+     */
     public void removePlayer(String playerThreadUUID) throws Exception {
         if (this.players.containsKey(playerThreadUUID)) {
             if (this.gameStarted && !this.gameFinished) {
@@ -56,7 +78,12 @@ public class GameEngine {
         }
     }
 
-    // handle a client turn
+    /**
+     * Handle a move (turn) from a client
+     *
+     * @param clientHandler
+     * @param clientResponse
+     */
     public void doNextStep(ClientHandler clientHandler, ClientResponse clientResponse) {
         Player player = this.getPlayerFromClientHandler(clientHandler);
         boolean playAgain = false;
@@ -89,7 +116,9 @@ public class GameEngine {
         }
     }
 
-    // initialize the board from the admin response
+    /**
+     * Initialize the board from the admin response
+     */
     public void initializeBoard(ClientHandler clientHandler, ClientResponse clientResponse) {
         Player player = this.getPlayerFromClientHandler(clientHandler);
 
@@ -107,10 +136,16 @@ public class GameEngine {
         }
     }
 
+    /**
+     * Broadcast the game state to all clients
+     */
     public void broadcastGameState() {
         this.serverInstance.broadcastGameState();
     }
 
+    /**
+     * Reset the game
+     */
     private void endGame() {
         this.broadcastGameState();
         this.gameStarted = false;
@@ -166,6 +201,9 @@ public class GameEngine {
         this.currentPlayerId = firstPlayerId;
     }
 
+    /**
+     * Updates the current player id
+     */
     private void updateCurrentPlayerId() {
         // case where there is a single real player (not counting the admin)
         if (this.players.size() == 2) {
@@ -238,6 +276,12 @@ public class GameEngine {
         return null;
     }
 
+    /**
+     * Check if a player is connected
+     *
+     * @param player
+     * @return
+     */
     private boolean isPlayerConnected(Player player) {
         String playerUUID = this.getPlayerUUID(player);
         HashMap<String, ClientHandler> clients = this.serverInstance.getClients();
