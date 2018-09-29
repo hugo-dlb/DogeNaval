@@ -31,14 +31,12 @@ import com.daltrisseville.DogeNaval.Client.Entities.Tile;
 import com.daltrisseville.DogeNaval.Client.Entities.TileType;
 
 public class DogeNavalGUI implements MouseListener, ActionListener {
-	private final Color myGreen = new Color(63, 182, 63); // 51, 204, 51);
+	private final Color myGreen = new Color(172, 220, 238); // 51, 204, 51);
 	private final Color myRed = new Color(255, 76, 76);// 255, 51, 0);
-	private final Color myYellow = new Color(255, 211, 0);// 189, 145, 15);
+	private final Color myYellow = new Color(253, 255, 186);// 189, 145, 15);
 	private final Color myGray = new Color(57, 49, 49);// 121, 134, 134);
 	private final Color myBlue = new Color(3, 201, 169);
 	private final Color myWhite = new Color(236, 240, 241);
-
-	int test = 0;
 
 	private GenericBoard board;
 	private PrivateBoard adminBoard;
@@ -64,22 +62,18 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	JTextField loginTextField = new JTextField(10);
 	JPasswordField passwordTextField = new JPasswordField(10);
 	JButton buttonLogin = new JButton("login");
-	JButton buttonOne = new JButton("N/A");
 
 	// WaitPage
 	JLabel labelWait = new JLabel("");
 
 	// gamePage
-	JButton buttonSecond = new JButton("N/A");
-	JButton buttonTest = new JButton("Test Tile Update");
+	JLabel labelInfoPlayer = new JLabel();
 	JButton buttonSendTile = new JButton("Attack!");
 
 	// adminPage
-	JLabel labelScores = new JLabel();
-	JLabel labelInfo = new JLabel();
+	JLabel labelInfoAdmin = new JLabel();
 	JButton buttonValidate = new JButton("Validate");
 	JButton buttonOrientation = new JButton("Switch orientation");
-	JLabel labelOrientation = new JLabel();
 	JButton buttonSendBoard = new JButton("Send board to server");
 
 	CardLayout cl = new CardLayout();
@@ -93,7 +87,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	public void initGUI() {
 
 		frame.setMinimumSize(new Dimension(500, 400));
-		frame.setSize(new Dimension(700, 600));
+		frame.setSize(new Dimension(900, 700));
 
 		container.setLayout(cl);
 		playerPage.setLayout(new BorderLayout());
@@ -105,33 +99,32 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		adminBoard = new PrivateBoard();
 		adminPanel = new AdminBoardPanel(adminBoard);
 
-		labelWait.setFont(new Font("Serif", Font.PLAIN, 18));
+		labelWait.setFont(new Font("Serif", Font.PLAIN, 28));
+		this.labelInfoAdmin.setFont(new Font("Serif", Font.PLAIN, 18));
+		this.labelInfoPlayer.setFont(new Font("Serif", Font.PLAIN, 18));
 
 		loginPage.add(loginTextField);
 		loginPage.add(passwordTextField);
 		loginPage.add(buttonLogin);
-		loginPage.add(buttonOne);
 
 		waitPage.add(labelWait);
 
-		playerPage_top.add(buttonSecond);
-		playerPage_top.add(buttonTest);
 		playerPage_top.add(buttonSendTile);
 
-		adminPage_top.add(labelInfo);
 		adminPage_top.add(buttonValidate);
 		adminPage_top.add(buttonOrientation);
-		adminPage_top.add(labelOrientation);
 		adminPage_top.add(buttonSendBoard);
 
 		loginPage.setBackground(myGreen);
 		playerPage_top.setBackground(myGray);
+		adminPage_top.setBackground(myRed);
 		waitPage.setBackground(myYellow);
 
+		playerPage.add(labelInfoPlayer, BorderLayout.WEST);
 		playerPage.add(playerPage_top, BorderLayout.NORTH);
 		playerPage.add(boardPanel, BorderLayout.CENTER);
 
-		adminPage.add(labelScores, BorderLayout.WEST);
+		adminPage.add(labelInfoAdmin, BorderLayout.WEST);
 		adminPage.add(adminPage_top, BorderLayout.NORTH);
 		adminPage.add(adminPanel, BorderLayout.CENTER);
 
@@ -143,10 +136,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		switchPage("loginPage");
 
 		buttonLogin.setActionCommand("login");
-		buttonOne.setActionCommand("1");
 
-		buttonSecond.setActionCommand("2");
-		buttonTest.setActionCommand("3");
 		buttonSendTile.setActionCommand("attack");
 
 		buttonValidate.setActionCommand("validate");
@@ -154,10 +144,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		buttonSendBoard.setActionCommand("sendBoard");
 
 		buttonLogin.addActionListener(this);
-		buttonOne.addActionListener(this);
 
-		buttonSecond.addActionListener(this);
-		buttonTest.addActionListener(this);
 		buttonSendTile.addActionListener(this);
 
 		buttonValidate.addActionListener(this);
@@ -166,6 +153,9 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 		jrootpane = frame.getRootPane();
 		jrootpane.setDefaultButton(buttonLogin);
+
+		adminPanel.addMouseListener(this);
+		boardPanel.addMouseListener(this);
 
 		frame.add(container);
 		frame.setLocationRelativeTo(null);
@@ -179,26 +169,75 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	}
 
 	public void updatePlayerBoard(GenericBoard newBoard) {
-		System.out.println("Update PlayerBoard");
 		boardPanel.setBoard(newBoard);
 
 		boardPanel.updateUI();
+
+		updatePlayerLabel();
 	}
 
 	public void updateAdminBoard(PrivateBoard newBoard) {
-
-		System.out.println("Update AdminBoard");
 		adminPanel.setBoard(newBoard);
 
 		adminPanel.updateUI();
 
-		// String scores;
-		// for() players set text
+		updateAdminLabel();
 
 	}
 
+	public void updateAdminLabel() {
+		String s = "<html>";
+		if (clientInstance.isAdminCreating()) {
+			if (!adminPanel.isAllPlaced()) {
+				s += "Place dog length " + adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog());
+			} else {
+				s += "All dogs placed, please send";
+			}
+			s += "<br>";
+			s += "<br>";
+
+			if (adminPanel.getActualDirection() == DogDirection.Horizontal) {
+				s += "Horizontal";
+			} else if (adminPanel.getActualDirection() == DogDirection.Vertical) {
+				s += "Vertical";
+
+			}
+		}
+
+		s += "<br>";
+		s += "<br>";
+		s += "Player List";
+		s += "<br>";
+		for (Player p : clientInstance.getPlayers()) {
+			if (!p.getLevel().equals("ADMIN")) {
+				s += p.toString() + "<br>";
+			}
+
+		}
+		s += "</html>";
+		this.labelInfoAdmin.setText(s);
+
+	}
+
+	public void updatePlayerLabel() {
+		String s = "<html>";
+		s += clientInstance.isMyTurn() ? "Your turn!" : "Not your turn";
+		s += "<br>";
+		s += "<br>";
+		s += "Player List";
+		s += "<br>";
+		for (Player p : clientInstance.getPlayers()) {
+			if (!p.getLevel().equals("ADMIN")) {
+				s += p.toString() + "<br>";
+			}
+
+		}
+		s += "</html>";
+		this.labelInfoPlayer.setText(s);
+	}
+
 	public void goToLobby(Player[] players) {
-		
+
 		switchPage("waitPage");
 		jrootpane.setDefaultButton(null);
 
@@ -215,21 +254,30 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 
 		switchPage("playerPage");
 		jrootpane.setDefaultButton(buttonSendTile);
-		boardPanel.addMouseListener(this);
 		adminMode = false;
+
+		board = new GenericBoard();
+		boardPanel = new BoardPanel(board);
+
+		updatePlayerBoard(board);
 
 	}
 
 	public void startAdminPanel() {
-
+		System.out.println("admpanel");
 		switchPage("adminPage");
 		jrootpane.setDefaultButton(buttonValidate);
-		adminPanel.addMouseListener(this);
+
+		adminBoard = new PrivateBoard();
+		adminPanel = new AdminBoardPanel(adminBoard);
+
+		this.buttonOrientation.setEnabled(true);
+		this.buttonSendBoard.setEnabled(true);
+		this.buttonValidate.setEnabled(true);
+
 		adminMode = true;
 
-		labelInfo.setText(
-				"Place dog length " + adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()));
-		labelOrientation.setText("Horizontal");
+		updateAdminBoard(adminBoard);
 
 	}
 
@@ -257,21 +305,6 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 				e1.printStackTrace();
 			}
 			break;
-		case "1":
-			// startGamePanel();
-			break;
-
-		// game
-		case "2":
-			// switchPanel("firstPanel");
-			break;
-		case "3":
-			// Tests
-			boardPanel.getBoard().getTiles()[test][test].setTileType(TileType.Miss);
-			test++;
-			updatePlayerBoard(boardPanel.getBoard());
-
-			break;
 
 		case "attack":
 			if (boardPanel.getSelectedTile() != null) {
@@ -287,6 +320,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 			break;
 		// admin
 		case "validate":
+			System.out.println("validate");
 
 			if (!adminPanel.isAllPlaced()) {
 				Dog newDog = new Dog(adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()),
@@ -298,37 +332,31 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 					adminPanel.setToPlaceDog(adminPanel.getToPlaceDog() + 1);
 
 					adminPanel.updateUI();
+					this.updateAdminLabel();
 				} else {
 					JOptionPane.showMessageDialog(null, "Dog not valid", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
-
-			if (!adminPanel.isAllPlaced()) {
-				labelInfo.setText("Place dog length "
-						+ adminPanel.getBoard().getExpectedDogList().get(adminPanel.getToPlaceDog()));
-			} else {
-				labelInfo.setText("All dogs placed, please send");
-			}
-			// System.out.println(" doglistexpe : "+
-			// adminPanel.getBoard().getExpectedDogList());
 
 			break;
 		case "orientation":
 			switchOrientation();
 			break;
 		case "sendBoard":
-			// System.out.println("clientsend :
-			// "+ClientInstance.buildAdminResponse(adminPanel.getBoard()));
 			try {
 				if (BoardVerifier.verifyBoardInit(adminPanel.getBoard())) {
 					clientInstance.setAdminCreating(false);
+
+					this.buttonOrientation.setEnabled(false);
+					this.buttonSendBoard.setEnabled(false);
+					this.buttonValidate.setEnabled(false);
+
 					clientInstance.sendDataToServer(ClientInstance.buildAdminResponse(adminPanel.getBoard()));
 				} else {
 					JOptionPane.showMessageDialog(null, "Board not valid", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			break;
@@ -339,19 +367,18 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	public void switchOrientation() {
 		if (adminPanel.getActualDirection() == DogDirection.Horizontal) {
 			adminPanel.setActualDirection(DogDirection.Vertical);
-			labelOrientation.setText("Vertical");
 		} else if (adminPanel.getActualDirection() == DogDirection.Vertical) {
 			adminPanel.setActualDirection(DogDirection.Horizontal);
-			labelOrientation.setText("Horizontal");
 
 		}
+		updateAdminLabel();
 
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
 
-		// System.out.println(e.getX() + " - " + e.getY());
+		System.out.println(e.getX() + " - " + e.getY());
 		Point p = e.getPoint();
 
 		if (adminMode) {

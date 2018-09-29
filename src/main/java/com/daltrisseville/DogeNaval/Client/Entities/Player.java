@@ -1,34 +1,41 @@
 package com.daltrisseville.DogeNaval.Client.Entities;
 
-import com.daltrisseville.DogeNaval.Server.Entities.User;
-
 /**
  * This class represents a player in the game
  */
 public class Player {
 
-	private User user;
-	private int score;
-	private boolean connected;
+    private User user;
+    private int score;
+    private boolean connected;
 
-	public Player(User user, int score, boolean isConnected) {
-		this.user = user;
-		this.score = score;
-		this.connected = isConnected;
-	}
+    public Player(User user, int score, boolean connected) {
+        this.user = user;
+        this.score = score;
+        this.connected = connected;
+    }
 
-	public String toString() {
-		return this.user.getUsername() + (this.user.getLevel().equals("USER") ? ("(" + this.score + ") points,") : ",")
-				+ (this.connected ? " connected" : "disconnected") + ".";
-	}
+    public String toString() {
+        return this.user.getUsername() + "(" + this.score + ") points, " + (this.connected ? "connected" : "disconnected") + ".";
+    }
 
-	public int getId() { return this.user.getId(); }
+    public int getId() {
+        return this.user.getId();
+    }
 
-	public void upScore() {
-		this.score++;
-	}
+    public String getLevel() {
+        return this.user.getLevel();
+    }
 
-	public void setConnected (boolean connected) {
-		this.connected = connected;
-	}
+    public void upScore() {
+        this.score++;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
+    }
 }

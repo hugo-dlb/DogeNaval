@@ -10,6 +10,7 @@ import java.util.Scanner;
 import javax.swing.JOptionPane;
 
 import com.daltrisseville.DogeNaval.Client.Entities.GenericBoard;
+import com.daltrisseville.DogeNaval.Client.Entities.Player;
 import com.daltrisseville.DogeNaval.Client.Entities.PrivateBoard;
 import com.daltrisseville.DogeNaval.Client.Entities.Tile;
 import com.daltrisseville.DogeNaval.Client.Entities.Communications.ClientResponse;
@@ -24,11 +25,12 @@ public class ClientInstance {
 	Socket s;
 	DataInputStream dataInputStream;
 	DataOutputStream dataOutputStream;
-	boolean myTurn;
-
 	boolean launched;
 	boolean connected;
 	boolean adminCreating;
+	
+	Player[] players;
+	boolean myTurn=false;
 
 	DogeNavalGUI gui;
 
@@ -49,14 +51,18 @@ public class ClientInstance {
 	}
 
 	public void initConnexion() throws IOException {
-		scanner = new Scanner(System.in);
+		//scanner = new Scanner(System.in);
 
 		// getting localhost ip
+		
+		//ip = InetAddress.getByName("185.126.228.91");
 		ip = InetAddress.getByName("localhost");
+		boolean nn = ip.isReachable(5000);
+		System.out.println(nn);
 
 		// establish the connection with server port 5056
 		s = new Socket(ip, 5056);
-
+		System.out.println("socketpassed");
 		// obtaining input and out streams
 		dataInputStream = new DataInputStream(s.getInputStream());
 		dataOutputStream = new DataOutputStream(s.getOutputStream());
@@ -64,7 +70,7 @@ public class ClientInstance {
 
 	public void closeRessources() throws IOException {
 		// closing resources
-		scanner.close();
+		//scanner.close();
 		dataInputStream.close();
 		dataOutputStream.close();
 	}
@@ -81,6 +87,8 @@ public class ClientInstance {
 
 			Gson gson = new GsonBuilder().serializeNulls().create();
 			ServerRequest sr = gson.fromJson(received, ServerRequest.class);
+			this.players=sr.getPlayers();
+			this.myTurn=sr.getPlayerId()==sr.getCurrentPlayerId();
 
 			if (sr.getEventType().equals("GAME_STATE")) {
 				if (sr.isAdmin()) {
@@ -121,10 +129,11 @@ public class ClientInstance {
 			} else if (sr.getEventType().equals("LOGIN_REQUEST")) {
 
 				if (sr.isGameStarted()) {
-					JOptionPane.showMessageDialog(null, "Sorry! Game already started!", "Error", JOptionPane.ERROR_MESSAGE);
-				} else if(sr.isGameFull()) {
+					JOptionPane.showMessageDialog(null, "Sorry! Game already started!", "Error",
+							JOptionPane.ERROR_MESSAGE);
+				} else if (sr.isGameFull()) {
 					JOptionPane.showMessageDialog(null, "Sorry! Game full", "Error", JOptionPane.ERROR_MESSAGE);
-				}else if (!this.connected) {
+				} else if (!this.connected) {
 					this.connected = true;
 				} else {
 					JOptionPane.showMessageDialog(null, "Wrong login/password", "Error", JOptionPane.ERROR_MESSAGE);
@@ -169,6 +178,22 @@ public class ClientInstance {
 
 	public boolean isLaunched() {
 		return launched;
+	}
+
+	public boolean isConnected() {
+		return connected;
+	}
+
+	public boolean isAdminCreating() {
+		return adminCreating;
+	}
+
+	public Player[] getPlayers() {
+		return players;
+	}
+
+	public boolean isMyTurn() {
+		return myTurn;
 	}
 
 	public void setLaunched(boolean launched) {

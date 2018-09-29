@@ -19,11 +19,11 @@ public class AdminBoardPanel extends JPanel {
 	private PrivateBoard board;
 	private Tile selectedTile;
 
-	private final Color myGreen = new Color(63, 182, 63); // 51, 204, 51);
-	private final Color myRed = new Color(255, 76, 76);// 255, 51, 0);
-	private final Color myYellow = new Color(255, 211, 0);// 189, 145, 15);
-	private final Color myGray = new Color(57, 49, 49);// 121, 134, 134);
+	private final Color myRed = new Color(255, 76, 76);
+	private final Color myRed2 = new Color(139, 10, 30);
 	private final Color myBlue = new Color(3, 201, 169);
+	private final Color myBlue2 = new Color(41, 161, 156);
+	private final Color myBlue3 = new Color(41, 161, 190);
 	private final Color myWhite = new Color(236, 240, 241);
 
 	private final ImageIcon dogHImageIcon = new ImageIcon("src/img/dogH.png");
@@ -31,7 +31,7 @@ public class AdminBoardPanel extends JPanel {
 	private Image dogHImage = dogHImageIcon.getImage();
 	private Image dogVImage = dogVImageIcon.getImage();
 
-	private DogDirection actualDirection; 
+	private DogDirection actualDirection;
 	private int toPlaceDog;
 	private boolean allPlaced;
 
@@ -74,14 +74,16 @@ public class AdminBoardPanel extends JPanel {
 
 	public int getRectSize() {
 		// return this.rectSize;
-
+		System.out.println("this : "+this);
 		Rectangle r = this.getBounds();
+		System.out.println("bounds : "+r);
 		int rectSize;
 		if (r.width / this.board.getBoardSize() > r.height / this.board.getBoardSize()) {
 			rectSize = r.height / this.board.getBoardSize();
 		} else {
 			rectSize = r.width / this.board.getBoardSize();
 		}
+		System.out.println("rect : "+rectSize);
 		return rectSize;
 	}
 
@@ -117,7 +119,13 @@ public class AdminBoardPanel extends JPanel {
 
 				switch (this.board.getTiles()[i][j].getTileType()) {
 				case Empty:
-					g.setColor(myBlue);
+					if ((i + j) % 3 == 0) {
+						g.setColor(myBlue);
+					} else if ((i + j) % 3 == 1) {
+						g.setColor(myBlue2);
+					} else {
+						g.setColor(myBlue3);
+					}
 					break;
 				case Hit:
 					g.setColor(myRed);
@@ -147,7 +155,7 @@ public class AdminBoardPanel extends JPanel {
 		}
 
 		if (selectedTile != null) {
-			g.setColor(myRed);
+			g.setColor(myRed2);
 			for (int i = 0; i < 4; i++) {
 				g.drawRect(selectedTile.getCol() * this.getRectSize() + i,
 						selectedTile.getRow() * this.getRectSize() + i, this.getRectSize() - 2 * i,
