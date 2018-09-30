@@ -28,9 +28,9 @@ public class ClientInstance {
 	boolean launched;
 	boolean connected;
 	boolean adminCreating;
-	
+
 	Player[] players;
-	boolean myTurn=false;
+	boolean myTurn = false;
 
 	DogeNavalGUI gui;
 
@@ -51,11 +51,11 @@ public class ClientInstance {
 	}
 
 	public void initConnexion() throws IOException {
-		//scanner = new Scanner(System.in);
+		// scanner = new Scanner(System.in);
 
 		// getting localhost ip
-		
-		//ip = InetAddress.getByName("185.126.228.91");
+
+		// ip = InetAddress.getByName("185.126.228.91");
 		ip = InetAddress.getByName("localhost");
 		boolean nn = ip.isReachable(5000);
 		System.out.println(nn);
@@ -70,7 +70,7 @@ public class ClientInstance {
 
 	public void closeRessources() throws IOException {
 		// closing resources
-		//scanner.close();
+		// scanner.close();
 		dataInputStream.close();
 		dataOutputStream.close();
 	}
@@ -87,12 +87,13 @@ public class ClientInstance {
 
 			Gson gson = new GsonBuilder().serializeNulls().create();
 			ServerRequest sr = gson.fromJson(received, ServerRequest.class);
-			this.players=sr.getPlayers();
-			this.myTurn=sr.getPlayerId()==sr.getCurrentPlayerId();
+			this.players = sr.getPlayers();
+			this.myTurn = sr.getPlayerId() == sr.getCurrentPlayerId();
 
 			if (sr.getEventType().equals("GAME_STATE")) {
 				if (sr.isAdmin()) {
 					if (!sr.isGameStarted() && !this.adminCreating) {
+
 						this.launched = false;
 						System.out.println("startAdminPanel clientside");
 						this.adminCreating = true;
@@ -107,6 +108,16 @@ public class ClientInstance {
 
 						System.out.println("startGameForAdmin");
 						this.launched = true;
+					} else if (sr.isGameFinished()) {
+						String message = "<html>Scores : <br>";
+						for (Player p : players) {
+							if (!p.getLevel().equals("ADMIN")) {
+								message += p.toString() + "<br>";
+							}
+
+						}
+						message += "</html>";
+						JOptionPane.showMessageDialog(null, message, "Final scores", JOptionPane.PLAIN_MESSAGE);
 					} else {
 						PrivateBoard newBoard = sr.getPrivateBoard();
 						gui.updateAdminBoard(newBoard);
@@ -116,6 +127,7 @@ public class ClientInstance {
 				} else {// not admin
 
 					if (!sr.isGameStarted()) {
+
 						gui.goToLobby(sr.getPlayers());
 						this.launched = false;
 					} else if (!this.launched) {
@@ -123,6 +135,26 @@ public class ClientInstance {
 
 						gui.startGamePanel();
 						this.launched = true;
+					} else if (sr.isGameFinished()) {
+
+						Player best = null;
+						int i = 0;
+						String message = "<html>Scores : <br>";
+						for (Player p : players) {
+							if (!p.getLevel().equals("ADMIN")) {
+								message += p.toString() + "<br>";
+							}
+							if (p.getScore() > i) {
+								best = p;
+								i = p.getScore();
+
+							}
+						}
+						
+						String s = best.getId() == sr.getCurrentPlayerId() ? "Gagné !!!" : "Perdu NOOB";
+						message+="<br>"+s+"</html>";
+
+						JOptionPane.showMessageDialog(null, message, s, JOptionPane.PLAIN_MESSAGE);
 					} else {
 						GenericBoard newBoard = sr.getPublicBoard();
 						gui.updatePlayerBoard(newBoard);

@@ -35,8 +35,6 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	private final Color myRed = new Color(255, 76, 76);// 255, 51, 0);
 	private final Color myYellow = new Color(253, 255, 186);// 189, 145, 15);
 	private final Color myGray = new Color(57, 49, 49);// 121, 134, 134);
-	private final Color myBlue = new Color(3, 201, 169);
-	private final Color myWhite = new Color(236, 240, 241);
 
 	private GenericBoard board;
 	private PrivateBoard adminBoard;
@@ -74,7 +72,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	JLabel labelInfoAdmin = new JLabel();
 	JButton buttonValidate = new JButton("Validate");
 	JButton buttonOrientation = new JButton("Switch orientation");
-	JButton buttonSendBoard = new JButton("Send board to server");
+	JButton buttonSendBoard = new JButton("Start Game !");
 
 	CardLayout cl = new CardLayout();
 
@@ -254,11 +252,8 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		switchPage("playerPage");
 		jrootpane.setDefaultButton(buttonSendTile);
 		adminMode = false;
-		
 
-		 board = new GenericBoard();
-		// boardPanel = new BoardPanel(board);
-		// boardPanel.addMouseListener(this);
+		board = new GenericBoard();
 		boardPanel.setBoard(board);
 
 		updatePlayerBoard(board);
@@ -270,11 +265,8 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		switchPage("adminPage");
 		jrootpane.setDefaultButton(buttonValidate);
 
-		 adminBoard = new PrivateBoard();
-		// adminPanel = new AdminBoardPanel(adminBoard);
-		// adminPanel.addMouseListener(this);
-		
-		
+		adminBoard = new PrivateBoard();
+
 		adminPanel.setBoard(adminBoard);
 		adminPanel.setToPlaceDog(0);
 		adminPanel.setAllPlaced(false);
@@ -353,7 +345,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		case "sendBoard":
 			try {
 				if (BoardVerifier.verifyBoardInit(adminPanel.getBoard())) {
-					if(clientInstance.getPlayers().length==3) {
+					if (clientInstance.getPlayers().length == 3) {
 						clientInstance.setAdminCreating(false);
 
 						this.buttonOrientation.setEnabled(false);
@@ -361,9 +353,9 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 						this.buttonValidate.setEnabled(false);
 
 						clientInstance.sendDataToServer(ClientInstance.buildAdminResponse(adminPanel.getBoard()));
-					}else {
+					} else {
 						JOptionPane.showMessageDialog(null, "Not enough players!", "Error", JOptionPane.ERROR_MESSAGE);
-					}					
+					}
 				} else {
 					JOptionPane.showMessageDialog(null, "Board not valid", "Error", JOptionPane.ERROR_MESSAGE);
 				}

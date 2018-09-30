@@ -35,7 +35,11 @@ public class Player {
         this.score = score;
     }
 
-    public void setConnected(boolean connected) {
+    public int getScore() {
+		return score;
+	}
+
+	public void setConnected(boolean connected) {
         this.connected = connected;
     }
 }
