@@ -38,4 +38,8 @@ public class Player {
     public void setConnected(boolean connected) {
         this.connected = connected;
     }
+
+    public void hidePassword() {
+        this.user.setPassword(null);
+    }
 }
