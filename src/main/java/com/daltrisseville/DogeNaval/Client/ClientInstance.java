@@ -151,7 +151,7 @@ public class ClientInstance {
 							}
 						}
 						
-						String s = best.getId() == sr.getCurrentPlayerId() ? "Gagné !!!" : "Perdu NOOB";
+						String s = best.getId() == sr.getPlayerId()? "Gagné !!!" : "Perdu NOOB";
 						message+="<br>"+s+"</html>";
 
 						JOptionPane.showMessageDialog(null, message, s, JOptionPane.PLAIN_MESSAGE);
