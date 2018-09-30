@@ -5,21 +5,32 @@ import java.util.*;
 
 import com.daltrisseville.DogeNaval.Server.Entities.User;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
+/**
+ * The UserHandler class manages authentication
+ */
 public class UserHandler {
 
     private ArrayList<User> usersList = new ArrayList<>();
     private File usersDatabase;
 
-    public ArrayList<User> getUsersList() {
-        return this.usersList;
-    }
-
+    /**
+     * Constructor taking no arguments, it will load the list of
+     * users by calling the loadUsersList function
+     */
     public UserHandler() {
         this.loadUsersList();
     }
 
+    /**
+     * Authenticates a player. Returns the user if the username
+     * and password provided belong to an user from the users list,
+     * returns null otherwise
+     *
+     * @param username
+     * @param password
+     * @return
+     */
     public User checkUserAuthentication(String username, String password) {
         for (Iterator<User> i = this.usersList.iterator(); i.hasNext(); ) {
             User currentUser = i.next();
@@ -32,25 +43,9 @@ public class UserHandler {
         return null;
     }
 
-    public User createUser(String username, String password, String level) {
-        User user = new User(username, password, level);
-        this.usersList.add(user);
-        //this.saveUsersList();
-        return user;
-    }
-
-    public void saveUsersList() {
-        try {
-            Writer writer = new FileWriter(usersDatabase);
-            Gson gson = new GsonBuilder().create();
-            gson.toJson(this.usersList, writer);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-
-
+    /**
+     * Loads the users list from the json file acting as a database
+     */
     private void loadUsersList() {
         try {
             this.usersDatabase = new File(this.getClass().getClassLoader().getResource("users.json").getFile());
