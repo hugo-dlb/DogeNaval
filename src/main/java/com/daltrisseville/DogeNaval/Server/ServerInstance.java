@@ -124,7 +124,8 @@ public class ServerInstance {
 						this.gameEngine.getPlayers().get(key).getLevel().equals("ADMIN")
 								? this.gameEngine.getPrivateBoard()
 								: null,
-						this.getGameEngine().getPlayersArray(), this.gameEngine.getPlayers().get(key).getId(),
+						this.getGameEngine().getPlayersArray(),
+						this.gameEngine.getPlayers().get(key).getId(),
 						this.getGameEngine().isGameFull(),
 						this.gameEngine.getPlayers().get(key).getLevel().equals("ADMIN"));
 

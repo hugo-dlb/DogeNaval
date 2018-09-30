@@ -170,6 +170,7 @@ public class GameEngine {
         int i = 0;
         for (String key : this.players.keySet()) {
             players[i] = this.players.get(key);
+            players[i].hidePassword();
             i++;
         }
 
