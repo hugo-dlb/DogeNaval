@@ -163,9 +163,6 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		// frame.pack();
 		frame.setVisible(true);
 
-		// test
-		// updateBoard(new GenericBoard());
-
 	}
 
 	public void updatePlayerBoard(GenericBoard newBoard) {
@@ -177,6 +174,7 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	}
 
 	public void updateAdminBoard(PrivateBoard newBoard) {
+		System.out.println("updateAdmin");
 		adminPanel.setBoard(newBoard);
 
 		adminPanel.updateUI();
@@ -251,25 +249,35 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 	}
 
 	public void startGamePanel() {
+		System.out.println("startGame");
 
 		switchPage("playerPage");
 		jrootpane.setDefaultButton(buttonSendTile);
 		adminMode = false;
+		
 
-		board = new GenericBoard();
-		boardPanel = new BoardPanel(board);
+		 board = new GenericBoard();
+		// boardPanel = new BoardPanel(board);
+		// boardPanel.addMouseListener(this);
+		boardPanel.setBoard(board);
 
 		updatePlayerBoard(board);
 
 	}
 
 	public void startAdminPanel() {
-		System.out.println("admpanel");
+		System.out.println("startradmpanel");
 		switchPage("adminPage");
 		jrootpane.setDefaultButton(buttonValidate);
 
-		adminBoard = new PrivateBoard();
-		adminPanel = new AdminBoardPanel(adminBoard);
+		 adminBoard = new PrivateBoard();
+		// adminPanel = new AdminBoardPanel(adminBoard);
+		// adminPanel.addMouseListener(this);
+		
+		
+		adminPanel.setBoard(adminBoard);
+		adminPanel.setToPlaceDog(0);
+		adminPanel.setAllPlaced(false);
 
 		this.buttonOrientation.setEnabled(true);
 		this.buttonSendBoard.setEnabled(true);
@@ -345,13 +353,17 @@ public class DogeNavalGUI implements MouseListener, ActionListener {
 		case "sendBoard":
 			try {
 				if (BoardVerifier.verifyBoardInit(adminPanel.getBoard())) {
-					clientInstance.setAdminCreating(false);
+					if(clientInstance.getPlayers().length==3) {
+						clientInstance.setAdminCreating(false);
 
-					this.buttonOrientation.setEnabled(false);
-					this.buttonSendBoard.setEnabled(false);
-					this.buttonValidate.setEnabled(false);
+						this.buttonOrientation.setEnabled(false);
+						this.buttonSendBoard.setEnabled(false);
+						this.buttonValidate.setEnabled(false);
 
-					clientInstance.sendDataToServer(ClientInstance.buildAdminResponse(adminPanel.getBoard()));
+						clientInstance.sendDataToServer(ClientInstance.buildAdminResponse(adminPanel.getBoard()));
+					}else {
+						JOptionPane.showMessageDialog(null, "Not enough players!", "Error", JOptionPane.ERROR_MESSAGE);
+					}					
 				} else {
 					JOptionPane.showMessageDialog(null, "Board not valid", "Error", JOptionPane.ERROR_MESSAGE);
 				}

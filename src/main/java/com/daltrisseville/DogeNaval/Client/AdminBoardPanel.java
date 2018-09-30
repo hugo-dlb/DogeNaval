@@ -51,6 +51,10 @@ public class AdminBoardPanel extends JPanel {
 		this.toPlaceDog = toPlaceDog;
 	}
 
+	public void setAllPlaced(boolean allPlaced) {
+		this.allPlaced = allPlaced;
+	}
+
 	public boolean isAllPlaced() {
 		return this.board.getExpectedDogList().size() == this.toPlaceDog ? true : false;
 	}
@@ -73,17 +77,16 @@ public class AdminBoardPanel extends JPanel {
 	}
 
 	public int getRectSize() {
-		// return this.rectSize;
-		System.out.println("this : "+this);
+		//System.out.println("this : "+this);
 		Rectangle r = this.getBounds();
-		System.out.println("bounds : "+r);
+		//System.out.println("bounds : "+r);
 		int rectSize;
 		if (r.width / this.board.getBoardSize() > r.height / this.board.getBoardSize()) {
 			rectSize = r.height / this.board.getBoardSize();
 		} else {
 			rectSize = r.width / this.board.getBoardSize();
 		}
-		System.out.println("rect : "+rectSize);
+		//System.out.println("rect : "+rectSize);
 		return rectSize;
 	}
 

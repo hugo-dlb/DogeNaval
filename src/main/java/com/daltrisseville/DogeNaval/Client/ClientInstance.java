@@ -93,13 +93,16 @@ public class ClientInstance {
 			if (sr.getEventType().equals("GAME_STATE")) {
 				if (sr.isAdmin()) {
 					if (!sr.isGameStarted() && !this.adminCreating) {
-						System.out.println("startAdminPanel");
+						this.launched = false;
+						System.out.println("startAdminPanel clientside");
 						this.adminCreating = true;
 
 						gui.startAdminPanel();
 
 					} else if (this.adminCreating) {
+						this.launched = false;
 						System.out.println("new player connects");
+						gui.updateAdminLabel();
 					} else if (!this.launched) {
 
 						System.out.println("startGameForAdmin");
@@ -114,6 +117,7 @@ public class ClientInstance {
 
 					if (!sr.isGameStarted()) {
 						gui.goToLobby(sr.getPlayers());
+						this.launched = false;
 					} else if (!this.launched) {
 						System.out.println("startGamePanel");
 
